@@ -9,3 +9,5 @@ R
 T
 
 [API](https://www.datamuse.com/api/)
+
+Bleu om de score van de rijmende zin te beoordelen
