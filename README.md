@@ -7,3 +7,5 @@ R
   B
  O
 T
+
+[API](https://www.datamuse.com/api/)
