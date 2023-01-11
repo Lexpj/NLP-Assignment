@@ -20,7 +20,7 @@ client = commands.Bot(intents=discord.Intents.all(),command_prefix="!")
 @client.command()
 async def reload(ctx, *args):
     await ctx.channel.send("Rebooting...")
-    await bot.change_presence(activity=discord.Game(name="Rebooting..."))
+    await client.change_presence(activity=discord.Game(name="Rebooting..."))
     os.system("sudo reboot")
 
 @client.command()
@@ -52,7 +52,7 @@ async def rhyme(ctx, *args):
 
 @client.event
 async def on_ready():
-    await bot.change_presence(activity=discord.Game(name="Active"))
+    await client.change_presence(activity=discord.Game(name="Active"))
     print(f'{client.user} has connected to Discord!')
 
 @client.event
