@@ -13,7 +13,9 @@ with open("TOKEN.txt","r") as f:
     
 client = commands.Bot(intents=discord.Intents.all(),command_prefix="!")
 
-
+@client.command()
+async def reload(ctx, *args):
+    os.system("sudo reboot -r now")
 
 @client.command()
 async def rhyme(ctx, *args):
