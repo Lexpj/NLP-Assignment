@@ -26,5 +26,3 @@ def getRhymeWords(word):
     # If fails, it returns an empty array
     return []
 
-
-print(getRhymeWords("forgetful"))
