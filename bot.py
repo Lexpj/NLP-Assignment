@@ -3,6 +3,9 @@ import os
 import discord
 from discord.ext import commands
 
+import sys
+print("sys.path:\n" + "\n".join(sys.path))
+
 import random
 from APICall import getRhymeWords 
 
