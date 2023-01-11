@@ -7,7 +7,8 @@ import random
 from APICall import getRhymeWords 
 
 ######### DO NOT CHANGE #########
-with open("TOKEN.txt","r") as f:
+import os.path
+with open(os.path.dirname(__file__) + "/../TOKEN.txt","r") as f:
     TOKEN = f.readline().rstrip()
 #################################
     
