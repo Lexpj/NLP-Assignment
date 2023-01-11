@@ -16,6 +16,7 @@ client = commands.Bot(intents=discord.Intents.all(),command_prefix="!")
 
 @client.command()
 async def reload(ctx, *args):
+    ctx.channel.send("Rebooting...")
     os.system("sudo reboot")
 
 @client.command()
