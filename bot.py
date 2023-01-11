@@ -35,20 +35,28 @@ async def rhyme(ctx, *args):
         embedVar.add_field(name="!rhyme [word] -worst [x=1]", value="Receive the worst x rhyme words. By default: 1", inline=False)
         await ctx.send(embed=embedVar)  
     
-    elif "-all" in args[1:]:
-        await ctx.channel.send(', '.join(getRhymeWords(args[0])))
-    elif "-best" in args[1:]:
-        if len(args) > 2:
-            await ctx.channel.send(', '.join(getRhymeWords(args[0])[:int(args[2])]))
-        else:
-            await ctx.channel.send(getRhymeWords(args[0])[0])
-    elif "-worst" in args[1:]:
-        if len(args) > 2:
-            await ctx.channel.send(', '.join(getRhymeWords(args[0])[-int(args[2]):]))
-        else:
-            await ctx.channel.send(getRhymeWords(args[0])[-1])
     else:
-        await ctx.channel.send(random.choice(getRhymeWords(args[0])))
+        rhymeWords = getRhymeWords(args[0])
+    
+        # No rhyme words found:
+        if len(rhymeWords) == 0:
+            await ctx.channel.send(f"No words found that rhyme with '{args[0]}'")
+
+        elif "-all" in args[1:]:
+            await ctx.channel.send(', '.join(rhymeWords))
+
+        elif "-best" in args[1:]:
+            if len(args) > 2:
+                await ctx.channel.send(', '.join(rhymeWords[:int(args[2])]))
+            else:
+                await ctx.channel.send(rhymeWords[0])
+        elif "-worst" in args[1:]:
+            if len(args) > 2:
+                await ctx.channel.send(', '.join(rhymeWords[-int(args[2]):]))
+            else:
+                await ctx.channel.send(rhymeWords[-1])
+        else:
+            await ctx.channel.send(random.choice(rhymeWords))
 
 @client.event
 async def on_ready():
