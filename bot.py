@@ -15,7 +15,7 @@ client = commands.Bot(intents=discord.Intents.all(),command_prefix="!")
 
 @client.command()
 async def reload(ctx, *args):
-    os.system("sudo reboot -r now")
+    os.system("sudo reboot")
 
 @client.command()
 async def rhyme(ctx, *args):
