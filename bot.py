@@ -71,28 +71,28 @@ async def rhyme(ctx, *args):
     ## HELP
     if len(args) == 0:
         embedVar = discord.Embed(title="Rhyme bot", description="Possible commands", color=0x00ff00)
-        embedVar.add_field(name="!rhyme [word]", value="Receive a random rhyme word", inline=False)
-        embedVar.add_field(name="!rhyme [word] -all", value="Receive all rhyme words", inline=False)
-        embedVar.add_field(name="!rhyme [word] -best [x=1]", value="Receive the best x rhyme words. By default: 1", inline=False)
-        embedVar.add_field(name="!rhyme [word] -worst [x=1]", value="Receive the worst x rhyme words. By default: 1", inline=False)
+        embedVar.add_field(name="!rhyme [phrase]", value="Receive a random rhyme word", inline=False)
+        embedVar.add_field(name="!rhyme [phrase] -all", value="Receive all rhyme words", inline=False)
+        embedVar.add_field(name="!rhyme [phrase] -best [x=1]", value="Receive the best x rhyme words. By default: 1", inline=False)
+        embedVar.add_field(name="!rhyme [phrase] -worst [x=1]", value="Receive the worst x rhyme words. By default: 1", inline=False)
         await ctx.send(embed=embedVar)  
     
     else:
-        rhymeWords = getRhymeWords(args[0])
+        rhymeWords = getRhymeWords([x for x in args if x[0] != "-"][-1])
     
         # No rhyme words found:
         if len(rhymeWords) == 0:
             await ctx.channel.send(f"No words found that rhyme with '{args[0]}'")
 
-        elif "-all" in args[1:]:
+        elif "-all" in args:
             await ctx.channel.send(', '.join(rhymeWords))
 
-        elif "-best" in args[1:]:
+        elif "-best" in args:
             if len(args) > 2:
                 await ctx.channel.send(', '.join(rhymeWords[:int(args[2])]))
             else:
                 await ctx.channel.send(rhymeWords[0])
-        elif "-worst" in args[1:]:
+        elif "-worst" in args:
             if len(args) > 2:
                 await ctx.channel.send(', '.join(rhymeWords[-int(args[2]):]))
             else:
