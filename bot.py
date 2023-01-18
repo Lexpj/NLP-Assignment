@@ -30,13 +30,13 @@ async def git(ctx, *args):
         await ctx.send(embed=embedVar)  
     elif args[0] == "status":
         output = subprocess.check_output("cd /home/pi/Desktop/nlp/NLP-Assignment; git status", shell=True)
-        await ctx.send(output) 
+        await ctx.send(output.decode("utf-8") ) 
     elif args[0] == "checkout":
         output = subprocess.check_output(f"cd /home/pi/Desktop/nlp/NLP-Assignment; git checkout {args[1]}", shell=True)
-        await ctx.send(output) 
+        await ctx.send(output.decode("utf-8") ) 
     elif args[0] == "pull":
         output = subprocess.check_output("cd /home/pi/Desktop/nlp/NLP-Assignment; git pull", shell=True)
-        await ctx.send(output) 
+        await ctx.send(output.decode("utf-8") ) 
 #################################
 
 ####### DEPENDENCIES ############
@@ -49,10 +49,10 @@ async def pip(ctx, *args):
         await ctx.send(embed=embedVar)
     elif args[0] == "install":
         output = subprocess.check_output(f"sudo pip install {args[1]}", shell=True)
-        await ctx.send(output) 
+        await ctx.send(output.decode("utf-8") ) 
     elif args[0] == "uninstall":
         output = subprocess.check_output(f"sudo pip uninstall {args[1]}", shell=True)
-        await ctx.send(output) 
+        await ctx.send(output.decode("utf-8") ) 
 #################################
 
 @client.command()
