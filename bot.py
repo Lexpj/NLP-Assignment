@@ -68,6 +68,14 @@ async def reload(ctx, *args):
 @client.command()
 async def rhyme(ctx, *args):
     
+    def is_integer(n):
+        try:
+            float(n)
+            return True
+        except ValueError:
+            return False
+     
+    
     ## HELP
     if len(args) == 0:
         embedVar = discord.Embed(title="Rhyme bot", description="Possible commands", color=0x00ff00)
@@ -78,7 +86,8 @@ async def rhyme(ctx, *args):
         await ctx.send(embed=embedVar)  
     
     else:
-        rhymeWords = getRhymeWords([x for x in args if x[0] != "-"][-1])
+        selection = [x for x in args if x[0] != "-" and not is_integer(x)]
+        rhymeWords = getRhymeWords(selection[-1])
     
         # No rhyme words found:
         if len(rhymeWords) == 0:
