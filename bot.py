@@ -13,6 +13,8 @@ from APICall import getRhymeWords
 import os.path
 with open(os.path.dirname(__file__) + "/../TOKEN.txt","r") as f:
     TOKEN = f.readline().rstrip()
+with open(os.path.dirname(__file__) + "/../branch.txt","r") as f:
+    BRANCH = f.readline().rstrip()
 #################################
     
 client = commands.Bot(intents=discord.Intents.all(),command_prefix="!")
@@ -26,17 +28,19 @@ async def git(ctx, *args):
         embedVar = discord.Embed(title="Git", description="Possible commands", color=0xff0000)
         embedVar.add_field(name="!git status", value="Current branch the bot is in", inline=False)
         embedVar.add_field(name="!git checkout [branch]", value="Checkout a different branch. RELOAD ON EXECUTION", inline=False)
-        embedVar.add_field(name="!git branch", value="Check branches", inline=False)
         await ctx.send(embed=embedVar)  
     elif args[0] == "status":
-        output = subprocess.check_output("cd /home/pi/Desktop/nlp/NLP-Assignment; git status", shell=True)
-        await ctx.send(output.decode("utf-8") ) 
+        message = f"Currently on branch '{BRANCH}'"
+        with open(os.path.dirname(__file__) + "/../branch.txt","r") as f:
+            newbranch = f.readline().rstrip()
+        if newbranch != BRANCH:
+            message += f"\nAfter reboot on branch '{newbranch}'"
+        await ctx.send(message)
+        
     elif args[0] == "checkout":
         with open(os.path.dirname(__file__) + "/../branch.txt","w") as f:
             f.write(args[1])
-    elif args[0] == "branch":
-        output = subprocess.check_output(f"cd /home/pi/Desktop/nlp/NLP-Assignment; git branch", shell=True)
-        await ctx.send(output.decode("utf-8") ) 
+        await ctx.send(f"After reboot, starting up on branch '{args[1]}'")
 #################################
 
 ####### DEPENDENCIES ############
@@ -98,9 +102,7 @@ async def rhyme(ctx, *args):
 
 @client.event
 async def on_ready():
-    with open(os.path.dirname(__file__) + "/../branch.txt","r") as f:
-        branch = f.readline().rstrip()
-    await client.change_presence(activity=discord.Game(name=f"Active>{branch}"))
+    await client.change_presence(activity=discord.Game(name=f"Active>{BRANCH}"))
     print(f'{client.user} has connected to Discord!')
 
 @client.event
