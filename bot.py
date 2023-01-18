@@ -25,7 +25,7 @@ async def git(ctx, *args):
     if len(args) == 0:
         embedVar = discord.Embed(title="Git", description="Possible commands", color=0xff0000)
         embedVar.add_field(name="!git status", value="Current branch the bot is in", inline=False)
-        embedVar.add_field(name="!git checkout [branch]", value="Checkout a different branch. RELOADS ON EXECUTION", inline=False)
+        embedVar.add_field(name="!git checkout [branch]", value="Checkout a different branch. RELOAD ON EXECUTION", inline=False)
         embedVar.add_field(name="!git branch", value="Check branches", inline=False)
         await ctx.send(embed=embedVar)  
     elif args[0] == "status":
