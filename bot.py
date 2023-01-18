@@ -34,6 +34,9 @@ async def git(ctx, *args):
     elif args[0] == "checkout":
         output = subprocess.check_output(f"cd /home/pi/Desktop/nlp/NLP-Assignment; git checkout {args[1]}", shell=True)
         await ctx.send(output.decode("utf-8") ) 
+    elif args[0] == "branch":
+        output = subprocess.check_output(f"cd /home/pi/Desktop/nlp/NLP-Assignment; git branch {args[1]}", shell=True)
+        await ctx.send(output.decode("utf-8") ) 
     elif args[0] == "pull":
         output = subprocess.check_output("cd /home/pi/Desktop/nlp/NLP-Assignment; git pull", shell=True)
         await ctx.send(output.decode("utf-8") ) 
@@ -98,7 +101,9 @@ async def rhyme(ctx, *args):
 
 @client.event
 async def on_ready():
-    await client.change_presence(activity=discord.Game(name="Active"))
+    with open(os.path.dirname(__file__) + "/../branch.txt","r") as f:
+        branch = f.readline().rstrip()
+    await client.change_presence(activity=discord.Game(name=f"Active>{branch}"))
     print(f'{client.user} has connected to Discord!')
 
 @client.event
