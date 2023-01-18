@@ -25,20 +25,18 @@ async def git(ctx, *args):
     if len(args) == 0:
         embedVar = discord.Embed(title="Git", description="Possible commands", color=0xff0000)
         embedVar.add_field(name="!git status", value="Current branch the bot is in", inline=False)
-        embedVar.add_field(name="!git checkout [branch]", value="Checkout a different branch", inline=False)
-        embedVar.add_field(name="!git pull", value="Pulls current branch", inline=False)
+        embedVar.add_field(name="!git checkout [branch]", value="Checkout a different branch. RELOADS ON EXECUTION", inline=False)
+        embedVar.add_field(name="!git branch", value="Check branches", inline=False)
         await ctx.send(embed=embedVar)  
     elif args[0] == "status":
         output = subprocess.check_output("cd /home/pi/Desktop/nlp/NLP-Assignment; git status", shell=True)
         await ctx.send(output.decode("utf-8") ) 
     elif args[0] == "checkout":
-        output = subprocess.check_output(f"cd /home/pi/Desktop/nlp/NLP-Assignment; git checkout {args[1]}", shell=True)
-        await ctx.send(output.decode("utf-8") ) 
+        with open(os.path.dirname(__file__) + "/../branch.txt","w") as f:
+            f.write(args[1])
+        reload(ctx) 
     elif args[0] == "branch":
         output = subprocess.check_output(f"cd /home/pi/Desktop/nlp/NLP-Assignment; git branch {args[1]}", shell=True)
-        await ctx.send(output.decode("utf-8") ) 
-    elif args[0] == "pull":
-        output = subprocess.check_output("cd /home/pi/Desktop/nlp/NLP-Assignment; git pull", shell=True)
         await ctx.send(output.decode("utf-8") ) 
 #################################
 
