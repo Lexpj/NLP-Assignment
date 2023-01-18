@@ -17,6 +17,24 @@ with open(os.path.dirname(__file__) + "/../TOKEN.txt","r") as f:
     
 client = commands.Bot(intents=discord.Intents.all(),command_prefix="!")
 
+
+############# GIT ###############
+import subprocess
+@client.command()
+async def git(ctx, *args):
+    if len(args) == 0:
+        embedVar = discord.Embed(title="Git", description="Possible commands", color=0xff0000)
+        embedVar.add_field(name="!git status", value="Current branch the bot is in", inline=False)
+        embedVar.add_field(name="!git checkout [branch]", value="Checkout a different branch", inline=False)
+        embedVar.add_field(name="!git pull", value="Pulls current branch", inline=False)
+        await ctx.send(embed=embedVar)  
+    elif args[0] == "status":
+        output = subprocess.check_output("git status", shell=True)
+        await ctx.send(output) 
+
+
+
+
 @client.command()
 async def reload(ctx, *args):
     await ctx.channel.send("Rebooting...")
