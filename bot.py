@@ -29,11 +29,31 @@ async def git(ctx, *args):
         embedVar.add_field(name="!git pull", value="Pulls current branch", inline=False)
         await ctx.send(embed=embedVar)  
     elif args[0] == "status":
-        output = subprocess.check_output("git status", shell=True)
+        output = subprocess.check_output("cd /home/pi/Desktop/nlp/NLP-Assignment; git status", shell=True)
         await ctx.send(output) 
+    elif args[0] == "checkout":
+        output = subprocess.check_output(f"cd /home/pi/Desktop/nlp/NLP-Assignment; git checkout {args[1]}", shell=True)
+        await ctx.send(output) 
+    elif args[0] == "pull":
+        output = subprocess.check_output("cd /home/pi/Desktop/nlp/NLP-Assignment; git pull", shell=True)
+        await ctx.send(output) 
+#################################
 
-
-
+####### DEPENDENCIES ############
+@client.command()
+async def pip(ctx, *args):
+    if len(args) == 0:
+        embedVar = discord.Embed(title="Pip", description="Possible commands", color=0x0000ff)
+        embedVar.add_field(name="!pip install", value="Installs a package", inline=False)
+        embedVar.add_field(name="!pip uninstall", value="Uninstalls a package", inline=False)
+        await ctx.send(embed=embedVar)
+    elif args[0] == "install":
+        output = subprocess.check_output(f"sudo pip install {args[1]}", shell=True)
+        await ctx.send(output) 
+    elif args[0] == "uninstall":
+        output = subprocess.check_output(f"sudo pip uninstall {args[1]}", shell=True)
+        await ctx.send(output) 
+#################################
 
 @client.command()
 async def reload(ctx, *args):
