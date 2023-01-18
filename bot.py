@@ -17,7 +17,7 @@ with open(os.path.dirname(__file__) + "/../branch.txt","r") as f:
     BRANCH = f.readline().rstrip()
 #################################
     
-client = commands.Bot(intents=discord.Intents.all(),command_prefix="!")
+client = commands.Bot(intents=discord.Intents.all(),command_prefix="/")
 
 
 ############# GIT ###############
