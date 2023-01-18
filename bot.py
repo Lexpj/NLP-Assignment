@@ -36,7 +36,7 @@ async def git(ctx, *args):
             f.write(args[1])
         reload(ctx) 
     elif args[0] == "branch":
-        output = subprocess.check_output(f"cd /home/pi/Desktop/nlp/NLP-Assignment; git branch {args[1]}", shell=True)
+        output = subprocess.check_output(f"cd /home/pi/Desktop/nlp/NLP-Assignment; git branch", shell=True)
         await ctx.send(output.decode("utf-8") ) 
 #################################
 
