@@ -1,7 +1,7 @@
 # bot.py
 import os
 import discord
-from discord.ext import commands
+from discord.ext import app_commands, commands
 
 import sys
 print("sys.path:\n" + "\n".join(sys.path))
@@ -123,5 +123,16 @@ async def on_message(message):
 
     await client.process_commands(message)
                 
-            
+@tree.command(name='test')
+@app_commands.describe(option="This is a description of what the option means")
+@app_commands.choices(option=[
+        app_commands.Choice(name="Option 1", value="1"),
+        app_commands.Choice(name="Option 2", value="2")
+    ])
+async def test(interaction: discord.Interaction, option: app_commands.Choice[str]):
+    pass
+
+
+
+
 client.run(TOKEN)
