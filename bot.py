@@ -89,12 +89,12 @@ async def rhyme(ctx, *args):
 
         elif "-best" in args:
             if len(args) > 2:
-                await ctx.channel.send(', '.join(rhymeWords[:int(args[2])]))
+                await ctx.channel.send(', '.join(rhymeWords[:int(args[-1])]))
             else:
                 await ctx.channel.send(rhymeWords[0])
         elif "-worst" in args:
             if len(args) > 2:
-                await ctx.channel.send(', '.join(rhymeWords[-int(args[2]):]))
+                await ctx.channel.send(', '.join(rhymeWords[-int(args[-1]):]))
             else:
                 await ctx.channel.send(rhymeWords[-1])
         else:
