@@ -102,7 +102,7 @@ async def rhyme(ctx, *args):
 
 @client.event
 async def on_ready():
-    await client.change_presence(activity=discord.Game(name=f"Active>{BRANCH}"))
+    await client.change_presence(activity=discord.Game(name=f"Active on '{BRANCH}'"))
     print(f'{client.user} has connected to Discord!')
 
 @client.event
