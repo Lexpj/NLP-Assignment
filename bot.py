@@ -38,7 +38,7 @@ tree = app_commands.CommandTree(aclient)
 async def slash2(interaction: discord.Interaction):
     await interaction.response.send_message(f"I am working! I was made with Discord.py!", ephemeral = True) 
 
-@tree.command(name='test')
+@tree.command(guild = GUILD, name = 'test', description='options')
 @app_commands.describe(option="This is a description of what the option means")
 @app_commands.choices(option=[
         app_commands.Choice(name="Option 1", value="1"),
