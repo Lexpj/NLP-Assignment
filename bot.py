@@ -19,7 +19,6 @@ _ready = False
 GUILD = 1038035076509880342
 
 bot = interactions.Client(token=TOKEN)
-bot.change_presence()
 
 @bot.command(
     name="base_command",
