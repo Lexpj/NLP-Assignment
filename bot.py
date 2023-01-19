@@ -1,6 +1,11 @@
 
 
 
+
+
+import discord
+from discord import app_commands 
+
 ######### DO NOT CHANGE #########
 import os.path
 with open(os.path.dirname(__file__) + "/../TOKEN.txt","r") as f:
@@ -9,10 +14,6 @@ with open(os.path.dirname(__file__) + "/../branch.txt","r") as f:
     BRANCH = f.readline().rstrip()
 GUILD = discord.Object(id=1038035076509880342)
 #################################
-
-
-import discord
-from discord import app_commands 
 
 class client(discord.Client):
     def __init__(self):
