@@ -66,8 +66,8 @@ async def cmd(ctx: interactions.CommandContext, sub_command: str, second_option:
     description="Reboots the server to add recent changes",
     scope=GUILD,
 )
-async def reload(ctx, *args):
-    await ctx.channel.send("Rebooting...")
+async def reload(ctx):
+    await ctx.send("Rebooting...")
     #await bot.change_presence(presence=interactions.ClientPresence("Rebooting..."))
     os.system("sudo reboot")        
 
