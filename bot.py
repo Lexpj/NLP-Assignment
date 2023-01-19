@@ -38,15 +38,6 @@ tree = app_commands.CommandTree(aclient)
 async def slash2(interaction: discord.Interaction):
     await interaction.response.send_message(f"I am working! I was made with Discord.py!", ephemeral = True) 
 
-@tree.command(guild = GUILD, name = 'test', description='options')
-@app_commands.describe(option="This is a description of what the option means")
-@app_commands.choices(option=[
-        app_commands.Choice(name="Option 1", value="1"),
-        app_commands.Choice(name="Option 2", value="2")
-    ])
-async def test(ctx, option, *args):
-    await ctx.response.send_message(f"Options {option}, args {args}", ephemeral = True) 
-
 
 @tree.command(guild = GUILD, name = 'git', description='Git commands for the branch the bot works on')
 @app_commands.describe(option="Git argument")
@@ -55,7 +46,13 @@ async def test(ctx, option, *args):
         app_commands.Choice(name="checkout", value="checkout"),
         app_commands.Choice(name="status", value="status")
     ])
-async def git(ctx, option, *args):
+@app_commands.describe(text="Branch")
+@app_commands.option(
+    "branch=",
+    str,
+    description="Enter a new branch"
+)
+async def git(ctx, option, text):
     if option == "help":
         embedVar = discord.Embed(title="Git", description="Possible commands", color=0xff0000)
         embedVar.add_field(name="/git status", value="Current branch the bot is in", inline=False)
@@ -71,8 +68,8 @@ async def git(ctx, option, *args):
         
     elif option == "checkout":
         with open(os.path.dirname(__file__) + "/../branch.txt","w") as f:
-            f.write(option)
-        await ctx.send(f"After reboot, starting up on branch '{option}'")
+            f.write(text)
+        await ctx.send(f"After reboot, starting up on branch '{text}'")
 
 
 
