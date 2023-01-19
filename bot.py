@@ -59,6 +59,60 @@ async def cmd(ctx: interactions.CommandContext, sub_command: str, second_option:
     elif sub_command == "second_command":
         await ctx.send(f"You selected the second_command sub command and put in {second_option}")
         
+
+############# GIT ###############
+import subprocess
+@bot.command(
+    name="git",
+    description="Use git commands to switch branches and check current branch",
+    scope=GUILD,
+    options=[
+        interactions.Option(
+            name="help",
+            description="Overview of all commands",
+            type=interactions.OptionType.SUB_COMMAND,
+        ),
+        interactions.Option(
+            name="status",
+            description="Check current branch of the bot",
+            type=interactions.OptionType.SUB_COMMAND,
+        ),
+        interactions.Option(
+            name="checkout",
+            description="Switch to another branch",
+            type=interactions.OptionType.SUB_COMMAND,
+            options=[
+                interactions.Option(
+                    name="branch",
+                    description="New branch",
+                    type=interactions.OptionType.STRING,
+                    required=True,
+                ),
+            ],
+        ),
+    ],
+)
+async def git(ctx: interactions.CommandContext, sub_command: str, branch: str):
+    if sub_command == "help":
+        embedVar = discord.Embed(title="Git", description="Possible commands", color=0xff0000)
+        embedVar.add_field(name="!git status", value="Current branch the bot is in", inline=False)
+        embedVar.add_field(name="!git checkout [branch]", value="Checkout a different branch. RELOAD ON EXECUTION", inline=False)
+        await ctx.send(embed=embedVar)  
+    
+    elif sub_command == "status":
+        message = f"Currently on branch '{BRANCH}'"
+        with open(os.path.dirname(__file__) + "/../branch.txt","r") as f:
+            newbranch = f.readline().rstrip()
+        if newbranch != BRANCH:
+            message += f"\nAfter reboot on branch '{newbranch}'"
+        await ctx.send(message)
+        
+    elif sub_command == "checkout":
+        with open(os.path.dirname(__file__) + "/../branch.txt","w") as f:
+            f.write(branch)
+        await ctx.send(f"After reboot, starting up on branch '{branch}'")
+#################################
+
       
       
 @bot.command(
