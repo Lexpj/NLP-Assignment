@@ -150,15 +150,15 @@ async def rhyme(ctx: interactions.CommandContext, sub_command: str = None, promp
    
 @bot.component("all")
 async def button_reponse_all(ctx):
-    await ctx.send(f"{p} rhymes with {getRhymeWords(p.split()[-1])}",components=row)
+    await ctx.send(f"All rhymes of {p} are: {', '.join(getRhymeWords(p.split()[-1]))}",components=row)
 
 @bot.component("worst")
 async def button_reponse_worst(ctx):
-    await ctx.send(f"{p} rhymes with {getRhymeWords(p.split()[-1])[-1]}",components=row)
+    await ctx.send(f"The worst rhyme of {p} is {getRhymeWords(p.split()[-1])[-1]}",components=row)
     
 @bot.component("best")
 async def button_reponse_best(ctx):
-    await ctx.send(f"{p} rhymes with {getRhymeWords(p.split()[-1])[0]}",components=row)
+    await ctx.send(f"The best rhyme of {p} is {getRhymeWords(p.split()[-1])[0]}",components=row)
 
 #####################################
    
