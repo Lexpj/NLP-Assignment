@@ -92,7 +92,7 @@ import subprocess
         ),
     ],
 )
-async def git(ctx: interactions.CommandContext, sub_command: str, branch: str):
+async def git(ctx: interactions.CommandContext, sub_command: str, branch: str = ""):
     if sub_command == "help":
         embedVar = discord.Embed(title="Git", description="Possible commands", color=0xff0000)
         embedVar.add_field(name="!git status", value="Current branch the bot is in", inline=False)
