@@ -1,7 +1,10 @@
+# bot.py
+import os
+import sys
+print("sys.path:\n" + "\n".join(sys.path))
 
-
-
-
+import random
+from APICall import getRhymeWords 
 
 import discord
 from discord import app_commands 
@@ -34,5 +37,16 @@ tree = app_commands.CommandTree(aclient)
 @tree.command(guild = GUILD, name = 'tester', description='testing') #guild specific slash command
 async def slash2(interaction: discord.Interaction):
     await interaction.response.send_message(f"I am working! I was made with Discord.py!", ephemeral = True) 
+
+@tree.command(name='test')
+@app_commands.describe(option="This is a description of what the option means")
+@app_commands.choices(option=[
+        app_commands.Choice(name="Option 1", value="1"),
+        app_commands.Choice(name="Option 2", value="2")
+    ])
+async def test(interaction: discord.Interaction, option: app_commands.Choice[str]):
+    await interaction.response.send_message(f"Options {option}, interaction {interaction}", ephemeral = True) 
+
+
 
 aclient.run(TOKEN)
