@@ -44,7 +44,7 @@ async def slash2(interaction: discord.Interaction):
         app_commands.Choice(name="Option 1", value="1"),
         app_commands.Choice(name="Option 2", value="2")
     ])
-async def test(ctx: discord.Interaction, option: app_commands.Choice[str], *args):
+async def test(ctx, option, *args):
     await ctx.response.send_message(f"Options {option}, args {args}", ephemeral = True) 
 
 
@@ -55,7 +55,7 @@ async def test(ctx: discord.Interaction, option: app_commands.Choice[str], *args
         app_commands.Choice(name="checkout", value="checkout"),
         app_commands.Choice(name="status", value="status")
     ])
-async def git(ctx: discord.Interaction, option: app_commands.Choice[str], *args):
+async def git(ctx, option, *args):
     if option == "help":
         embedVar = discord.Embed(title="Git", description="Possible commands", color=0xff0000)
         embedVar.add_field(name="/git status", value="Current branch the bot is in", inline=False)
