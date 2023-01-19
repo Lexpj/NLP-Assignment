@@ -13,6 +13,7 @@ with open(os.path.dirname(__file__) + "/../TOKEN.txt","r") as f:
     TOKEN = f.readline().rstrip()
 with open(os.path.dirname(__file__) + "/../branch.txt","r") as f:
     BRANCH = f.readline().rstrip()
+_ready = False
 #################################
 
 GUILD = 1038035076509880342
@@ -68,13 +69,16 @@ async def cmd(ctx: interactions.CommandContext, sub_command: str, second_option:
 )
 async def reload(ctx, *args):
     await ctx.channel.send("Rebooting...")
-    await bot.change_presence(presence=interactions.ClientPresence("Rebooting..."))
+    #await bot.change_presence(presence=interactions.ClientPresence("Rebooting..."))
     os.system("sudo reboot")        
 
 
 @bot.event
 async def on_ready():
-    await bot.change_presence(presence=interactions.ClientPresence(f"Active on '{BRANCH}'"))
-    print(f'{bot.user} has connected to Discord!')        
-        
+    global _ready
+    if not _ready:
+        #await bot.change_presence(presence=interactions.ClientPresence(f"Active on '{BRANCH}'"))
+        print(f'{bot.user} has connected to Discord!')  
+        _ready = True
+          
 bot.start()
