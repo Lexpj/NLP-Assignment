@@ -1,6 +1,7 @@
 import interactions
 import os
 import sys
+import discord
 print("sys.path:\n" + "\n".join(sys.path))
 
 import random
@@ -57,5 +58,23 @@ async def cmd(ctx: interactions.CommandContext, sub_command: str, second_option:
         await ctx.send(f"You selected the command_name sub command and put in {option}")
     elif sub_command == "second_command":
         await ctx.send(f"You selected the second_command sub command and put in {second_option}")
+        
+      
+      
+@bot.command(
+    name="reboot",
+    description="Reboots the server to add recent changes",
+    scope=GUILD,
+)
+async def reload(ctx, *args):
+    await ctx.channel.send("Rebooting...")
+    await bot.change_presence(activity=discord.Game(name="Rebooting..."))
+    os.system("sudo reboot")        
+
+
+@bot.event
+async def on_ready():
+    await bot.change_presence(activity=discord.Game(name=f"Active on '{BRANCH}'"))
+    print(f'{bot.user} has connected to Discord!')        
         
 bot.start()
