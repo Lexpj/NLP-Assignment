@@ -1,13 +1,10 @@
-# bot.py
+import interactions
 import os
 import sys
 print("sys.path:\n" + "\n".join(sys.path))
 
 import random
 from APICall import getRhymeWords 
-from typing import Union
-import discord
-from discord import option
 
 ######### DO NOT CHANGE #########
 import os.path
@@ -15,73 +12,50 @@ with open(os.path.dirname(__file__) + "/../TOKEN.txt","r") as f:
     TOKEN = f.readline().rstrip()
 with open(os.path.dirname(__file__) + "/../branch.txt","r") as f:
     BRANCH = f.readline().rstrip()
-GUILD = discord.Object(id=1038035076509880342)
-ECHTEMANNEN = discord.Object(id=993237650683203695)
 #################################
 
-
-bot = discord.Bot(debug_guilds=[GUILD,ECHTEMANNEN])
-
-
-# If you use commands.Bot, @bot.slash_command should be used for
-# slash commands. You can use @bot.slash_command with discord.Bot as well.
+GUILD = 1038035076509880342
 
 
-@bot.slash_command()
-@option("name", description="Enter your name")
-@option("gender", description="Choose your gender", choices=["Male", "Female", "Other"])
-@option(
-    "age",
-    description="Enter your age",
-    min_value=1,
-    max_value=99,
-    default=18,
-    # Passing the default value makes an argument optional.
-    # You also can create optional arguments using:
-    # age: Option(int, "Enter your age") = 18
+bot = interactions.Client(token=TOKEN)
+
+@bot.command(
+    name="base_command",
+    description="This description isn't seen in UI (yet?)",
+    scope=GUILD,
+    options=[
+        interactions.Option(
+            name="command_name",
+            description="A descriptive description",
+            type=interactions.OptionType.SUB_COMMAND,
+            options=[
+                interactions.Option(
+                    name="option",
+                    description="A descriptive description",
+                    type=interactions.OptionType.INTEGER,
+                    required=False,
+                ),
+            ],
+        ),
+        interactions.Option(
+            name="second_command",
+            description="A descriptive description",
+            type=interactions.OptionType.SUB_COMMAND,
+            options=[
+                interactions.Option(
+                    name="second_option",
+                    description="A descriptive description",
+                    type=interactions.OptionType.STRING,
+                    required=True,
+                ),
+            ],
+        ),
+    ],
 )
-async def hello(
-    ctx: discord.ApplicationContext,
-    name: str,
-    gender: str,
-    age: int,
-):
-    await ctx.respond(
-        f"Hello {name}! Your gender is {gender} and you are {age} years old."
-    )
-
-
-@bot.slash_command(name="channel")
-@option(
-    "channel",
-    Union[discord.TextChannel, discord.VoiceChannel],
-    # You can specify allowed channel types by passing a union of them like this.
-    description="Select a channel",
-)
-async def select_channel(
-    ctx: discord.ApplicationContext,
-    channel: Union[discord.TextChannel, discord.VoiceChannel],
-):
-    await ctx.respond(f"Hi! You selected {channel.mention} channel.")
-
-
-@bot.slash_command(name="attach_file")
-@option(
-    "attachment",
-    discord.Attachment,
-    description="A file to attach to the message",
-    required=False,  # The default value will be None if the user doesn't provide a file.
-)
-async def say(
-    ctx: discord.ApplicationContext,
-    attachment: discord.Attachment,
-):
-    """This demonstrates how to attach a file with a slash command."""
-    if attachment:
-        file = await attachment.to_file()
-        await ctx.respond("Here's your file!", file=file)
-    else:
-        await ctx.respond("You didn't give me a file to reply with! :sob:")
-
-
-bot.run(TOKEN)
+async def cmd(ctx: interactions.CommandContext, sub_command: str, second_option: str = "", option: int = None):
+    if sub_command == "command_name":
+        await ctx.send(f"You selected the command_name sub command and put in {option}")
+    elif sub_command == "second_command":
+        await ctx.send(f"You selected the second_command sub command and put in {second_option}")
+        
+bot.start()
