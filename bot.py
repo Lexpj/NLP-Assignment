@@ -44,8 +44,36 @@ async def slash2(interaction: discord.Interaction):
         app_commands.Choice(name="Option 1", value="1"),
         app_commands.Choice(name="Option 2", value="2")
     ])
-async def test(interaction: discord.Interaction, option: app_commands.Choice[str]):
-    await interaction.response.send_message(f"Options {option}, interaction {interaction}", ephemeral = True) 
+async def test(ctx: discord.Interaction, option: app_commands.Choice[str], *args):
+    await ctx.response.send_message(f"Options {option}, args {args}", ephemeral = True) 
+
+
+@tree.command(guild = GUILD, name = 'git', description='Git commands for the branch the bot works on')
+@app_commands.describe(option="Git argument")
+@app_commands.choices(option=[
+        app_commands.Choice(name="help", value="help"),
+        app_commands.Choice(name="checkout", value="checkout"),
+        app_commands.Choice(name="status", value="status")
+    ])
+async def git(ctx: discord.Interaction, option: app_commands.Choice[str], *args):
+    if option == "help":
+        embedVar = discord.Embed(title="Git", description="Possible commands", color=0xff0000)
+        embedVar.add_field(name="/git status", value="Current branch the bot is in", inline=False)
+        embedVar.add_field(name="/git checkout [branch]", value="Checkout a different branch. RELOAD ON EXECUTION", inline=False)
+        await ctx.send(embed=embedVar)  
+    elif option == "status":
+        message = f"Currently on branch '{BRANCH}'"
+        with open(os.path.dirname(__file__) + "/../branch.txt","r") as f:
+            newbranch = f.readline().rstrip()
+        if newbranch != BRANCH:
+            message += f"\nAfter reboot on branch '{newbranch}'"
+        await ctx.send(message)
+        
+    elif option == "checkout":
+        with open(os.path.dirname(__file__) + "/../branch.txt","w") as f:
+            f.write(option)
+        await ctx.send(f"After reboot, starting up on branch '{option}'")
+
 
 
 
