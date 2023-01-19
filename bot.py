@@ -5,9 +5,9 @@ print("sys.path:\n" + "\n".join(sys.path))
 
 import random
 from APICall import getRhymeWords 
-
+from typing import Union
 import discord
-from discord import app_commands 
+from discord import option
 
 ######### DO NOT CHANGE #########
 import os.path
@@ -16,62 +16,72 @@ with open(os.path.dirname(__file__) + "/../TOKEN.txt","r") as f:
 with open(os.path.dirname(__file__) + "/../branch.txt","r") as f:
     BRANCH = f.readline().rstrip()
 GUILD = discord.Object(id=1038035076509880342)
+ECHTEMANNEN = discord.Object(id=993237650683203695)
 #################################
 
-class client(discord.Client):
-    def __init__(self):
-        super().__init__(intents=discord.Intents.all())
-        self.synced = False #we use this so the bot doesn't sync commands more than once
 
-    async def on_ready(self):
-        await self.wait_until_ready()
-        if not self.synced: #check if slash commands have been synced 
-            await tree.sync(guild=GUILD) #guild specific: leave blank if global (global registration can take 1-24 hours)
-            self.synced = True
-        print(f"We have logged in as {self.user}.")
-        await self.change_presence(activity=discord.Game(name=f"Active on '{BRANCH}'"))
-
-aclient = client()
-tree = app_commands.CommandTree(aclient)
-
-@tree.command(guild = GUILD, name = 'tester', description='testing') #guild specific slash command
-async def slash2(interaction: discord.Interaction):
-    await interaction.response.send_message(f"I am working! I was made with Discord.py!", ephemeral = True) 
+bot = discord.Bot(debug_guilds=[GUILD,ECHTEMANNEN])
 
 
-@tree.command(guild = GUILD, name = 'git', description='Git commands for the branch the bot works on')
-@app_commands.describe(option="Git argument")
-@app_commands.choices(option=[
-        app_commands.Choice(name="help", value="help"),
-        app_commands.Choice(name="checkout", value="checkout"),
-        app_commands.Choice(name="status", value="status")
-    ])
-@app_commands.describe(text="Branch")
-@app_commands.option(
-    "branch=",
-    str,
-    description="Enter a new branch"
+# If you use commands.Bot, @bot.slash_command should be used for
+# slash commands. You can use @bot.slash_command with discord.Bot as well.
+
+
+@bot.slash_command()
+@option("name", description="Enter your name")
+@option("gender", description="Choose your gender", choices=["Male", "Female", "Other"])
+@option(
+    "age",
+    description="Enter your age",
+    min_value=1,
+    max_value=99,
+    default=18,
+    # Passing the default value makes an argument optional.
+    # You also can create optional arguments using:
+    # age: Option(int, "Enter your age") = 18
 )
-async def git(ctx, option, text):
-    if option == "help":
-        embedVar = discord.Embed(title="Git", description="Possible commands", color=0xff0000)
-        embedVar.add_field(name="/git status", value="Current branch the bot is in", inline=False)
-        embedVar.add_field(name="/git checkout [branch]", value="Checkout a different branch. RELOAD ON EXECUTION", inline=False)
-        await ctx.send(embed=embedVar)  
-    elif option == "status":
-        message = f"Currently on branch '{BRANCH}'"
-        with open(os.path.dirname(__file__) + "/../branch.txt","r") as f:
-            newbranch = f.readline().rstrip()
-        if newbranch != BRANCH:
-            message += f"\nAfter reboot on branch '{newbranch}'"
-        await ctx.send(message)
-        
-    elif option == "checkout":
-        with open(os.path.dirname(__file__) + "/../branch.txt","w") as f:
-            f.write(text)
-        await ctx.send(f"After reboot, starting up on branch '{text}'")
+async def hello(
+    ctx: discord.ApplicationContext,
+    name: str,
+    gender: str,
+    age: int,
+):
+    await ctx.respond(
+        f"Hello {name}! Your gender is {gender} and you are {age} years old."
+    )
 
 
+@bot.slash_command(name="channel")
+@option(
+    "channel",
+    Union[discord.TextChannel, discord.VoiceChannel],
+    # You can specify allowed channel types by passing a union of them like this.
+    description="Select a channel",
+)
+async def select_channel(
+    ctx: discord.ApplicationContext,
+    channel: Union[discord.TextChannel, discord.VoiceChannel],
+):
+    await ctx.respond(f"Hi! You selected {channel.mention} channel.")
 
 
-aclient.run(TOKEN)
+@bot.slash_command(name="attach_file")
+@option(
+    "attachment",
+    discord.Attachment,
+    description="A file to attach to the message",
+    required=False,  # The default value will be None if the user doesn't provide a file.
+)
+async def say(
+    ctx: discord.ApplicationContext,
+    attachment: discord.Attachment,
+):
+    """This demonstrates how to attach a file with a slash command."""
+    if attachment:
+        file = await attachment.to_file()
+        await ctx.respond("Here's your file!", file=file)
+    else:
+        await ctx.respond("You didn't give me a file to reply with! :sob:")
+
+
+bot.run(TOKEN)
