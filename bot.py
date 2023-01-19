@@ -15,50 +15,11 @@ with open(os.path.dirname(__file__) + "/../branch.txt","r") as f:
 _ready = False
 #################################
 
-GUILD = 1038035076509880342
-rhymeWords = []
+GUILD = 993237650683203695
+p = ""
 
 bot = interactions.Client(token=TOKEN)
 
-@bot.command(
-    name="base_command",
-    description="This description isn't seen in UI (yet?)",
-    scope=GUILD,
-    options=[
-        interactions.Option(
-            name="command_name",
-            description="A descriptive description",
-            type=interactions.OptionType.SUB_COMMAND,
-            options=[
-                interactions.Option(
-                    name="option",
-                    description="A descriptive description",
-                    type=interactions.OptionType.INTEGER,
-                    required=False,
-                ),
-            ],
-        ),
-        interactions.Option(
-            name="second_command",
-            description="A descriptive description",
-            type=interactions.OptionType.SUB_COMMAND,
-            options=[
-                interactions.Option(
-                    name="second_option",
-                    description="A descriptive description",
-                    type=interactions.OptionType.STRING,
-                    required=True,
-                ),
-            ],
-        ),
-    ],
-)
-async def cmd(ctx: interactions.CommandContext, sub_command: str, second_option: str = "", option: int = None):
-    if sub_command == "command_name":
-        await ctx.send(f"You selected the command_name sub command and put in {option}")
-    elif sub_command == "second_command":
-        await ctx.send(f"You selected the second_command sub command and put in {second_option}")
-        
 
 ############# GIT ###############
 @bot.command(
@@ -179,24 +140,25 @@ row = interactions.ActionRow(components=[buttonAll,buttonWorst,buttonBest])
 )
 
 async def rhyme(ctx: interactions.CommandContext, sub_command: str = None, prompt: str = "", items: int = 1):
-    global rhymeWords
+    global p
+    p = prompt
     rhymeWords = getRhymeWords(prompt.split()[-1])
     
     if len(rhymeWords) == 0:
         await ctx.send(f"No words found that rhyme with '{prompt.split()[-1]}'")
-    await ctx.send(random.choice(rhymeWords),components=row)
+    await ctx.send(prompt,"rhymes with",random.choice(rhymeWords),components=row)
    
 @bot.component("all")
 async def button_reponse_all(ctx):
-    await ctx.send(', '.join(rhymeWords))
+    await ctx.send(p,"rhymes with",getRhymeWords(p.split()[-1]))
 
 @bot.component("worst")
 async def button_reponse_worst(ctx):
-    await ctx.send(rhymeWords[-1])
+    await ctx.send(p,"rhymes with",getRhymeWords(p.split()[-1])[-1])
     
 @bot.component("best")
 async def button_reponse_best(ctx):
-    await ctx.send(rhymeWords[0])
+    await ctx.send(p,"rhymes with",getRhymeWords(p.split()[-1])[0])
 
 #####################################
    
