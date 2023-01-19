@@ -146,19 +146,19 @@ async def rhyme(ctx: interactions.CommandContext, sub_command: str = None, promp
     
     if len(rhymeWords) == 0:
         await ctx.send(f"No words found that rhyme with '{prompt.split()[-1]}'")
-    await ctx.send(prompt,"rhymes with",random.choice(rhymeWords),components=row)
+    await ctx.send(f"{prompt} rhymes with {random.choice(rhymeWords)}",components=row)
    
 @bot.component("all")
 async def button_reponse_all(ctx):
-    await ctx.send(p,"rhymes with",getRhymeWords(p.split()[-1]))
+    await ctx.send(f"{p} rhymes with {getRhymeWords(p.split()[-1])}",components=row)
 
 @bot.component("worst")
 async def button_reponse_worst(ctx):
-    await ctx.send(p,"rhymes with",getRhymeWords(p.split()[-1])[-1])
+    await ctx.send(f"{p} rhymes with {getRhymeWords(p.split()[-1])[-1]}",components=row)
     
 @bot.component("best")
 async def button_reponse_best(ctx):
-    await ctx.send(p,"rhymes with",getRhymeWords(p.split()[-1])[0])
+    await ctx.send(f"{p} rhymes with {getRhymeWords(p.split()[-1])[0]}",components=row)
 
 #####################################
    
