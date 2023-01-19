@@ -1,7 +1,6 @@
 import interactions
 import os
 import sys
-import discord
 print("sys.path:\n" + "\n".join(sys.path))
 
 import random
@@ -17,6 +16,7 @@ _ready = False
 #################################
 
 GUILD = 1038035076509880342
+rhymeWords = []
 
 bot = interactions.Client(token=TOKEN)
 
@@ -144,7 +144,26 @@ async def pip(ctx: interactions.CommandContext, sub_command: str, package: str =
         await ctx.send(f"{package} installed!")  
 #################################  
 
+
 ############ RHYME ##############
+
+buttonAll = interactions.Button(
+    style=interactions.ButtonStyle.PRIMARY,
+    label="All",
+    custom_id="all"
+)
+buttonBest = interactions.Button(
+    style=interactions.ButtonStyle.PRIMARY,
+    label="Best",
+    custom_id="best"
+)
+buttonWorst = interactions.Button(
+    style=interactions.ButtonStyle.PRIMARY,
+    label="Worst",
+    custom_id="worst"
+)
+row = interactions.ActionRow(components=[buttonAll,buttonWorst,buttonBest])
+
 @bot.command(
     name="rhyme",
     description="Use rhyme commands",
@@ -155,62 +174,32 @@ async def pip(ctx: interactions.CommandContext, sub_command: str, package: str =
             description="Sentence/phrase/word to rhyme",
             type=interactions.OptionType.STRING,
             required=True,
-            options=[
-                interactions.Option(
-                    name="best",
-                    description="Get the best options for rhyme words",
-                    type=interactions.OptionType.SUB_COMMAND,
-                    required=False,
-                    options=[
-                        interactions.Option(
-                            name="items",
-                            description="Number of items",
-                            type=interactions.OptionType.INTEGER,
-                            required=True,
-                        ),
-                    ]
-                ),
-                interactions.Option(
-                    name="worst",
-                    description="Get the worst options for rhyme words",
-                    type=interactions.OptionType.SUB_COMMAND,
-                    required=False,
-                    options=[
-                        interactions.Option(
-                            name="items",
-                            description="Number of items",
-                            type=interactions.OptionType.INTEGER,
-                            required=True,
-                        ),
-                    ]
-                ),
-                interactions.Option(
-                    name="all",
-                    description="Get all options for rhyme words",
-                    type=interactions.OptionType.SUB_COMMAND,
-                    required=False,
-                ),
-            ],
         ),
     ],
 )
 
 async def rhyme(ctx: interactions.CommandContext, sub_command: str = None, prompt: str = "", items: int = 1):
+    global rhymeWords
     rhymeWords = getRhymeWords(prompt.split()[-1])
     
     if len(rhymeWords) == 0:
         await ctx.send(f"No words found that rhyme with '{prompt.split()[-1]}'")
+    await ctx.send(random.choice(rhymeWords),components=row)
+   
+@bot.component("all")
+async def button_reponse_all(ctx):
+    await ctx.send(', '.join(rhymeWords))
+
+@bot.component("worst")
+async def button_reponse_worst(ctx):
+    await ctx.send(rhymeWords[-1])
     
-    if sub_command == None:
-        await ctx.send(random.choice(rhymeWords))
-    elif sub_command == "all":
-        await ctx.send(', '.join(rhymeWords))
-    elif sub_command == "best":
-        await ctx.send(', '.join(rhymeWords[:items]))
-    elif sub_command == "worst":
-        await ctx.send(', '.join(rhymeWords[-items:]))
-            
-      
+@bot.component("best")
+async def button_reponse_best(ctx):
+    await ctx.send(rhymeWords[0])
+
+#####################################
+   
 @bot.command(
     name="reboot",
     description="Reboots the server to add recent changes",
