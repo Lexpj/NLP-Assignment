@@ -25,7 +25,6 @@ bot = interactions.Client(token=TOKEN)
 @bot.command(
     name="git",
     description="Use git commands to switch branches and check current branch",
-    scope=GUILD,
     options=[
         interactions.Option(
             name="status",
@@ -66,7 +65,6 @@ async def git(ctx: interactions.CommandContext, sub_command: str, branch: str = 
 @bot.command(
     name="pip",
     description="Use pip commands to install or uninstall packages",
-    scope=GUILD,
     options=[
         interactions.Option(
             name="install",
@@ -128,7 +126,6 @@ row = interactions.ActionRow(components=[buttonAll,buttonWorst,buttonBest])
 @bot.command(
     name="rhyme",
     description="Use rhyme commands",
-    scope=GUILD,
     options=[
         interactions.Option(
             name="prompt",
@@ -165,7 +162,6 @@ async def button_reponse_best(ctx):
 @bot.command(
     name="reboot",
     description="Reboots the server to add recent changes",
-    scope=GUILD,
 )
 async def reload(ctx):
     await ctx.send("Rebooting...")
