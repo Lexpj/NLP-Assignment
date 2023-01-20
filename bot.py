@@ -174,7 +174,7 @@ async def reload(ctx):
     await bot.change_presence(presence=interactions.api.models.presence.ClientPresence(activities=[
         interactions.api.models.presence.PresenceActivity(name=f"Rebooting to {branch}...'",type=0)
     ]))
-    os.system("sudo ../startbot")        
+    os.system("sudo reboot")        
 
 
 @bot.event
