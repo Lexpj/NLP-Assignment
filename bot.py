@@ -15,17 +15,12 @@ with open(os.path.dirname(__file__) + "/../branch.txt","r") as f:
 _ready = False
 #################################
 
-GUILD = 993237650683203695
-p = ""
-
 bot = interactions.Client(token=TOKEN)
-
 
 ############# GIT ###############
 @bot.command(
     name="git",
     description="Use git commands to switch branches and check current branch",
-    scope=GUILD,
     options=[
         interactions.Option(
             name="status",
@@ -66,7 +61,6 @@ async def git(ctx: interactions.CommandContext, sub_command: str, branch: str = 
 @bot.command(
     name="pip",
     description="Use pip commands to install or uninstall packages",
-    scope=GUILD,
     options=[
         interactions.Option(
             name="install",
@@ -128,7 +122,6 @@ row = interactions.ActionRow(components=[buttonAll,buttonWorst,buttonBest])
 @bot.command(
     name="rhyme",
     description="Use rhyme commands",
-    scope=GUILD,
     options=[
         interactions.Option(
             name="prompt",
@@ -139,33 +132,51 @@ row = interactions.ActionRow(components=[buttonAll,buttonWorst,buttonBest])
     ],
 )
 
-async def rhyme(ctx: interactions.CommandContext, sub_command: str = None, prompt: str = "", items: int = 1):
-    global p
-    p = prompt
+async def rhyme(ctx: interactions.CommandContext, prompt: str = ""):
     rhymeWords = getRhymeWords(prompt.split()[-1])
     
     if len(rhymeWords) == 0:
         await ctx.send(f"No words found that rhyme with '{prompt.split()[-1]}'")
-    await ctx.send(f"{prompt} rhymes with {random.choice(rhymeWords)}",components=row)
-   
+    else:
+        await ctx.send(f"'{prompt}' rhymes with {random.choice(rhymeWords)}",components=row)
+
+def extractPhrase(s,word=False):
+    phrase = ""
+    quotes = 0
+    for chr in s:
+        if chr == "'":
+            quotes += 1
+        elif quotes == 1:
+            phrase += chr
+    return phrase
+
+
 @bot.component("all")
 async def button_reponse_all(ctx):
-    await ctx.send(f"All rhymes of {p} are: {', '.join(getRhymeWords(p.split()[-1]))}",components=row)
+    phrase = extractPhrase(str(ctx.message))
+    word = phrase.split()[-1]
+    rhymes = getRhymeWords(word)
+    await ctx.send(f"All rhymes of '{word}' are: {', '.join(rhymes)}",components=row)
 
 @bot.component("worst")
 async def button_reponse_worst(ctx):
-    await ctx.send(f"The worst rhyme of {p} is {getRhymeWords(p.split()[-1])[-1]}",components=row)
+    phrase = extractPhrase(str(ctx.message))
+    word = phrase.split()[-1]
+    rhymes = getRhymeWords(word)
+    await ctx.send(f"The worst rhyme of '{word}' is {rhymes[-1]}",components=row)
     
 @bot.component("best")
 async def button_reponse_best(ctx):
-    await ctx.send(f"The best rhyme of {p} is {getRhymeWords(p.split()[-1])[0]}",components=row)
+    phrase = extractPhrase(str(ctx.message))
+    word = phrase.split()[-1]
+    rhymes = getRhymeWords(word)
+    await ctx.send(f"The best rhyme of '{word}' is {rhymes[0]}",components=row)
 
 #####################################
    
 @bot.command(
     name="reboot",
     description="Reboots the server to add recent changes",
-    scope=GUILD,
 )
 async def reload(ctx):
     await ctx.send("Rebooting...")
