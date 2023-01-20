@@ -172,7 +172,7 @@ async def reload(ctx):
     with open(os.path.dirname(__file__) + "/../branch.txt","r") as f:
         branch = f.readline().rstrip()
     await bot.change_presence(presence=interactions.api.models.presence.ClientPresence(activities=[
-        interactions.api.models.presence.PresenceActivity(name=f"Rebooting to {branch}...'",type=0)
+        interactions.api.models.presence.PresenceActivity(name=f"Rebooting to '{branch}'...",type=0)
     ]))
     os.system("sudo reboot")        
 
