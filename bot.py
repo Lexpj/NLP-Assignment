@@ -169,15 +169,21 @@ async def button_reponse_best(ctx):
 )
 async def reload(ctx):
     await ctx.send("Rebooting...")
-    #await bot.change_presence(presence=interactions.ClientPresence("Rebooting..."))
-    os.system("sudo reboot")        
+    with open(os.path.dirname(__file__) + "/../branch.txt","r") as f:
+        branch = f.readline().rstrip()
+    await bot.change_presence(presence=interactions.api.models.presence.ClientPresence(activities=[
+        interactions.api.models.presence.PresenceActivity(name=f"Rebooting to {branch}...'",type=0)
+    ]))
+    os.system("sudo ../startbot")        
 
 
 @bot.event
 async def on_ready():
     global _ready
     if not _ready:
-        #await bot.change_presence(presence=interactions.ClientPresence(f"Active on '{BRANCH}'"))
+        await bot.change_presence(presence=interactions.api.models.presence.ClientPresence(activities=[
+            interactions.api.models.presence.PresenceActivity(name=f"Active on '{BRANCH}'",type=0)
+        ]))
         print(f'Bot has connected to Discord!')  
         _ready = True
           
