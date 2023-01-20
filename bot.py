@@ -153,21 +153,21 @@ def extractPhrase(s,word=False):
 
 @bot.component("all")
 async def button_reponse_all(ctx):
-    phrase = extractPhrase(ctx.message)
+    phrase = extractPhrase(str(ctx.message))
     word = phrase.split()[-1]
     rhymes = getRhymeWords(word)
     await ctx.send(f"All rhymes of '{word}' are: {', '.join(rhymes)}",components=row)
 
 @bot.component("worst")
 async def button_reponse_worst(ctx):
-    phrase = extractPhrase(ctx.message)
+    phrase = extractPhrase(str(ctx.message))
     word = phrase.split()[-1]
     rhymes = getRhymeWords(word)
     await ctx.send(f"The worst rhyme of '{word}' is {rhymes[-1]}",components=row)
     
 @bot.component("best")
 async def button_reponse_best(ctx):
-    phrase = extractPhrase(ctx.message)
+    phrase = extractPhrase(str(ctx.message))
     word = phrase.split()[-1]
     rhymes = getRhymeWords(word)
     await ctx.send(f"The best rhyme of '{word}' is {rhymes[0]}",components=row)
