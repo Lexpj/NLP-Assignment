@@ -20,12 +20,6 @@ bot = interactions.Client(token=TOKEN)
 
 ############# GIT ###############
 
-def getBranches():
-    output = subprocess.check_output(f"git branch -r",shell=True,cwd="/home/pi/Desktop/nlp/NLP-Assignment").decode("utf-8")
-    branches = output.split("origin/")
-    branches = [x.split("\n")[0] for x in branches if "\n" in x]
-    return list(set(branches))
-
 @bot.command(
     name="git",
     description="Use git commands to switch branches and check current branch",
@@ -45,7 +39,6 @@ def getBranches():
                     description="New branch",
                     type=interactions.OptionType.STRING,
                     required=True,
-                    choices = [interactions.Choice(name=x,value=x) for x in getBranches()]
                 ),
             ],
         ),
