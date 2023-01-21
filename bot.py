@@ -8,6 +8,7 @@ print("sys.path:\n" + "\n".join(sys.path))
 
 import random
 from APICall import getRhymeWords 
+from BART import BART
 
 ######### DO NOT CHANGE #########
 import os.path
@@ -98,7 +99,7 @@ async def rhyme(ctx, *args):
             else:
                 await ctx.channel.send(rhymeWords[-1])
         else:
-            await ctx.channel.send(random.choice(rhymeWords))
+            await ctx.channel.send(BART(*args, rhymeWords[:int(args[2])]))
 
 @client.event
 async def on_ready():
