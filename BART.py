@@ -9,5 +9,3 @@ def BART(sentence, rhymeword):
     generated_ids = model.generate(batch["input_ids"])
 
     return(tok.batch_decode(generated_ids, skip_special_tokens=True)[0])
-
-print(type(BART("I want to try this.", "bliss")))
