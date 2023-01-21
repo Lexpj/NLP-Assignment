@@ -20,7 +20,7 @@ bot = interactions.Client(token=TOKEN)
 ############# GIT ###############
 
 def getBranches():
-    output = subprocess.check_output(f"cd /home/pi/Desktop/nlp/NLP-Assignment & git branch -r",shell=True).decode("utf-8")
+    output = subprocess.check_output(f"cd & cd /home/pi/Desktop/nlp/NLP-Assignment & git branch -r",shell=True).decode("utf-8")
     branches = output.split("origin/")
     branches = [x.split("\n")[0] for x in branches if "\n" in x]
     return list(set(branches))
