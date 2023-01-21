@@ -1,11 +1,8 @@
-# bot.py
+import interactions
 import os
-import discord
-from discord.ext import commands
-
 import sys
 print("sys.path:\n" + "\n".join(sys.path))
-
+import subprocess
 import random
 from APICall import getRhymeWords 
 from BART import BART
@@ -16,21 +13,46 @@ with open(os.path.dirname(__file__) + "/../TOKEN.txt","r") as f:
     TOKEN = f.readline().rstrip()
 with open(os.path.dirname(__file__) + "/../branch.txt","r") as f:
     BRANCH = f.readline().rstrip()
+_ready = False
 #################################
-    
-client = commands.Bot(intents=discord.Intents.all(),command_prefix="!")
 
+bot = interactions.Client(token=TOKEN)
 
 ############# GIT ###############
-import subprocess
-@client.command()
-async def git(ctx, *args):
-    if len(args) == 0:
-        embedVar = discord.Embed(title="Git", description="Possible commands", color=0xff0000)
-        embedVar.add_field(name="!git status", value="Current branch the bot is in", inline=False)
-        embedVar.add_field(name="!git checkout [branch]", value="Checkout a different branch. RELOAD ON EXECUTION", inline=False)
-        await ctx.send(embed=embedVar)  
-    elif args[0] == "status":
+
+def getBranches():
+    output = subprocess.check_output(f"git branch -r",shell=True,cwd="/home/pi/Desktop/nlp/NLP-Assignment").decode("utf-8")
+    branches = output.split("origin/")
+    branches = [x.split("\n")[0] for x in branches if "\n" in x]
+    return list(set(branches))
+
+@bot.command(
+    name="git",
+    description="Use git commands to switch branches and check current branch",
+    options=[
+        interactions.Option(
+            name="status",
+            description="Check current branch of the bot",
+            type=interactions.OptionType.SUB_COMMAND,
+        ),
+        interactions.Option(
+            name="checkout",
+            description="Switch to another branch",
+            type=interactions.OptionType.SUB_COMMAND,
+            options=[
+                interactions.Option(
+                    name="branch",
+                    description="New branch",
+                    type=interactions.OptionType.STRING,
+                    required=True,
+                    choices = [interactions.Choice(name=x,value=x) for x in getBranches()]
+                ),
+            ],
+        ),
+    ],
+)
+async def git(ctx: interactions.CommandContext, sub_command: str, branch: str = ""):
+    if sub_command == "status":
         message = f"Currently on branch '{BRANCH}'"
         with open(os.path.dirname(__file__) + "/../branch.txt","r") as f:
             newbranch = f.readline().rstrip()
@@ -38,82 +60,152 @@ async def git(ctx, *args):
             message += f"\nAfter reboot on branch '{newbranch}'"
         await ctx.send(message)
         
-    elif args[0] == "checkout":
+    elif sub_command == "checkout":
         with open(os.path.dirname(__file__) + "/../branch.txt","w") as f:
-            f.write(args[1])
-        await ctx.send(f"After reboot, starting up on branch '{args[1]}'")
+            f.write(branch)
+        await ctx.send(f"After reboot, starting up on branch '{branch}'")
 #################################
 
-####### DEPENDENCIES ############
-@client.command()
-async def pip(ctx, *args):
-    if len(args) == 0:
-        embedVar = discord.Embed(title="Pip", description="Possible commands", color=0x0000ff)
-        embedVar.add_field(name="!pip install", value="Installs a package", inline=False)
-        embedVar.add_field(name="!pip uninstall", value="Uninstalls a package", inline=False)
-        await ctx.send(embed=embedVar)
-    elif args[0] == "install":
-        output = subprocess.check_output(f"sudo pip install {args[1]}", shell=True)
-        await ctx.send(output.decode("utf-8") ) 
-    elif args[0] == "uninstall":
-        output = subprocess.check_output(f"sudo pip uninstall {args[1]}", shell=True)
-        await ctx.send(output.decode("utf-8") ) 
-#################################
+############# PIP ###############
+@bot.command(
+    name="pip",
+    description="Use pip commands to install or uninstall packages",
+    options=[
+        interactions.Option(
+            name="install",
+            description="Install a package",
+            type=interactions.OptionType.SUB_COMMAND,
+            options=[
+                interactions.Option(
+                    name="package",
+                    description="Package to be installed",
+                    type=interactions.OptionType.STRING,
+                    required=True,
+                ),
+            ],
+        ),
+        interactions.Option(
+            name="uninstall",
+            description="Uninstall a package",
+            type=interactions.OptionType.SUB_COMMAND,
+            options=[
+                interactions.Option(
+                    name="package",
+                    description="Package to be uninstalled",
+                    type=interactions.OptionType.STRING,
+                    required=True,
+                ),
+            ],
+        ),
+    ],
+)
+async def pip(ctx: interactions.CommandContext, sub_command: str, package: str = ""):
+    if sub_command == "install":
+        os.system(f"sudo pip install {package}")
+        await ctx.send(f"{package} installed!") 
+    elif sub_command == "uninstall":
+        os.system(f"sudo pip uninstall {package}")
+        await ctx.send(f"{package} installed!")  
+#################################  
 
-@client.command()
-async def reload(ctx, *args):
-    await ctx.channel.send("Rebooting...")
-    await client.change_presence(activity=discord.Game(name="Rebooting..."))
-    os.system("sudo reboot")
 
-@client.command()
-async def rhyme(ctx, *args):
+############ RHYME ##############
+
+buttonAll = interactions.Button(
+    style=interactions.ButtonStyle.PRIMARY,
+    label="All",
+    custom_id="all"
+)
+buttonBest = interactions.Button(
+    style=interactions.ButtonStyle.PRIMARY,
+    label="Best",
+    custom_id="best"
+)
+buttonWorst = interactions.Button(
+    style=interactions.ButtonStyle.PRIMARY,
+    label="Worst",
+    custom_id="worst"
+)
+row = interactions.ActionRow(components=[buttonAll,buttonWorst,buttonBest])
+
+@bot.command(
+    name="rhyme",
+    description="Use rhyme commands",
+    options=[
+        interactions.Option(
+            name="prompt",
+            description="Sentence/phrase/word to rhyme",
+            type=interactions.OptionType.STRING,
+            required=True,
+        ),
+    ],
+)
+
+async def rhyme(ctx: interactions.CommandContext, prompt: str = ""):
+    rhymeWords = getRhymeWords(prompt.split()[-1])
     
-    ## HELP
-    if len(args) == 0:
-        embedVar = discord.Embed(title="Rhyme bot", description="Possible commands", color=0x00ff00)
-        embedVar.add_field(name="!rhyme [word]", value="Receive a random rhyme word", inline=False)
-        embedVar.add_field(name="!rhyme [word] -all", value="Receive all rhyme words", inline=False)
-        embedVar.add_field(name="!rhyme [word] -best [x=1]", value="Receive the best x rhyme words. By default: 1", inline=False)
-        embedVar.add_field(name="!rhyme [word] -worst [x=1]", value="Receive the worst x rhyme words. By default: 1", inline=False)
-        await ctx.send(embed=embedVar)  
-    
+    if len(rhymeWords) == 0:
+        await ctx.send(f"No words found that rhyme with '{prompt.split()[-1]}'")
     else:
-        rhymeWords = getRhymeWords(args[0])
+
+        await ctx.send(BART(prompt, rhymeWords[0]))
+
+def extractPhrase(s,word=False):
+    phrase = ""
+    quotes = 0
+    for chr in s:
+        if chr == "'":
+            quotes += 1
+        elif quotes == 1:
+            phrase += chr
+    return phrase
+
+
+@bot.component("all")
+async def button_reponse_all(ctx):
+    phrase = extractPhrase(str(ctx.message))
+    word = phrase.split()[-1]
+    rhymes = getRhymeWords(word)
+    await ctx.send(f"All rhymes of '{word}' are: {', '.join(rhymes)}",components=row)
+
+@bot.component("worst")
+async def button_reponse_worst(ctx):
+    phrase = extractPhrase(str(ctx.message))
+    word = phrase.split()[-1]
+    rhymes = getRhymeWords(word)
+    await ctx.send(f"The worst rhyme of '{word}' is {rhymes[-1]}",components=row)
     
-        # No rhyme words found:
-        if len(rhymeWords) == 0:
-            await ctx.channel.send(f"No words found that rhyme with '{args[0]}'")
+@bot.component("best")
+async def button_reponse_best(ctx):
+    phrase = extractPhrase(str(ctx.message))
+    word = phrase.split()[-1]
+    rhymes = getRhymeWords(word)
+    await ctx.send(f"The best rhyme of '{word}' is {rhymes[0]}",components=row)
 
-        elif "-all" in args[1:]:
-            await ctx.channel.send(', '.join(rhymeWords))
+#####################################
+   
+@bot.command(
+    name="reboot",
+    description="Reboots the server to add recent changes",
+)
+async def reload(ctx):
+    await ctx.send("Rebooting...")
+    with open(os.path.dirname(__file__) + "/../branch.txt","r") as f:
+        branch = f.readline().rstrip()
+    await bot.change_presence(presence=interactions.api.models.presence.ClientPresence(activities=[
+        interactions.api.models.presence.PresenceActivity(name=f"Rebooting to '{branch}'...",type=0)
+    ]))
+    os.system("sudo systemctl restart DiscordBot")        
 
-        elif "-best" in args[1:]:
-            if len(args) > 2:
-                await ctx.channel.send(', '.join(rhymeWords[:int(args[2])]))
-            else:
-                await ctx.channel.send(rhymeWords[0])
-        elif "-worst" in args[1:]:
-            if len(args) > 2:
-                await ctx.channel.send(', '.join(rhymeWords[-int(args[2]):]))
-            else:
-                await ctx.channel.send(rhymeWords[-1])
-        else:
-            await ctx.channel.send(BART(*args, rhymeWords[:int(args[2])]))
 
-@client.event
+@bot.event
 async def on_ready():
-    await client.change_presence(activity=discord.Game(name=f"Active>{BRANCH}"))
-    print(f'{client.user} has connected to Discord!')
-
-@client.event
-async def on_message(message):
-    
-    if message.author == client.user:
-        return
-    
-
-    await client.process_commands(message)
-                
-            
-client.run(TOKEN)
+    global _ready
+    if not _ready:
+        await bot.change_presence(presence=interactions.api.models.presence.ClientPresence(activities=[
+            interactions.api.models.presence.PresenceActivity(name=f"Active on '{BRANCH}'",type=0)
+        ]))
+        print(f'Bot has connected to Discord!')  
+        _ready = True
+          
+bot.start()
