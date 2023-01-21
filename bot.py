@@ -6,6 +6,9 @@ import subprocess
 import random
 from APICall import getRhymeWords 
 from BART import BART
+from threading import *
+
+BARTJUH = BART()
 
 ######### DO NOT CHANGE #########
 import os.path
@@ -14,6 +17,8 @@ with open(os.path.dirname(__file__) + "/../TOKEN.txt","r") as f:
 with open(os.path.dirname(__file__) + "/../branch.txt","r") as f:
     BRANCH = f.readline().rstrip()
 _ready = False
+q = {}
+
 #################################
 
 bot = interactions.Client(token=TOKEN)
@@ -121,6 +126,13 @@ buttonWorst = interactions.Button(
 )
 row = interactions.ActionRow(components=[buttonAll,buttonWorst,buttonBest])
 
+
+def __jobBart(ctx,prompt,rhymeWords):
+    global q
+    gen = BARTJUH.gen(prompt,rhymeWords[0])
+    q[prompt] = gen
+    
+    
 @bot.command(
     name="rhyme",
     description="Use rhyme commands",
@@ -132,16 +144,61 @@ row = interactions.ActionRow(components=[buttonAll,buttonWorst,buttonBest])
             required=True,
         ),
     ],
-)
+)    
 
 async def rhyme(ctx: interactions.CommandContext, prompt: str = ""):
-    rhymeWords = getRhymeWords(prompt.split()[-1])
+    global q
+    if prompt[-1] in ".,":
+        newprompt = prompt[:-1]
+    else:
+        newprompt = prompt
+    rhymeWords = getRhymeWords(newprompt.split()[-1])
     
     if len(rhymeWords) == 0:
         await ctx.send(f"No words found that rhyme with '{prompt.split()[-1]}'")
     else:
+        await ctx.send("Loading...")
+        thread = Thread(target=__jobBart,args=(ctx,prompt,rhymeWords))
+        
+        thread.start()
+        thread.join()
+        
+        k = list(q.keys()).copy()
+        for item in k:
+            res = q.get(item,None)
+            if res != None:
+                try:
+                    await ctx.edit(f"{item} \n-> {q[item]}")
+                    del q[item]
+                except Exception as e:
+                    print(e)
+                    
+@bot.command(
+    name="rhymewords",
+    description="Get single rhyme word",
+    options=[
+        interactions.Option(
+            name="prompt",
+            description="Sentence/phrase/word to rhyme",
+            type=interactions.OptionType.STRING,
+            required=True,
+        ),
+    ],
+)    
+async def rhymewords(ctx: interactions.CommandContext, prompt: str = ""):
 
-        await ctx.send(BART(prompt, rhymeWords[0]))
+    if prompt[-1] in ".,":
+        newprompt = prompt[:-1]
+    else:
+        newprompt = prompt
+    rhymeWords = getRhymeWords(newprompt.split()[-1])
+    
+    if len(rhymeWords) == 0:
+        await ctx.send(f"No words found that rhyme with '{prompt.split()[-1]}'")
+    else:
+        await ctx.send(f"'{prompt}' rhymes with {random.choice(rhymeWords)}",component=row)
+        
+        
 
 def extractPhrase(s,word=False):
     phrase = ""
@@ -189,8 +246,7 @@ async def reload(ctx):
         interactions.api.models.presence.PresenceActivity(name=f"Rebooting to '{branch}'...",type=0)
     ]))
     os.system("sudo systemctl restart DiscordBot")        
-
-
+        
 @bot.event
 async def on_ready():
     global _ready
@@ -200,5 +256,5 @@ async def on_ready():
         ]))
         print(f'Bot has connected to Discord!')  
         _ready = True
-          
+            
 bot.start()
