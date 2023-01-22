@@ -196,7 +196,7 @@ async def rhymewords(ctx: interactions.CommandContext, prompt: str = ""):
     if len(rhymeWords) == 0:
         await ctx.send(f"No words found that rhyme with '{prompt.split()[-1]}'")
     else:
-        await ctx.send(f"'{prompt}' rhymes with {random.choice(rhymeWords)}",component=row)
+        await ctx.send(f"'{prompt}' rhymes with {random.choice(rhymeWords)}",components=row)
         
         
 
