@@ -26,3 +26,9 @@ def getRhymeWords(word):
     # If fails, it returns an empty array
     return []
 
+def checkWord(sentence):
+    """
+    Gets the input phrase from the user in a string form and checks if the phrase is correct
+    :param sentence: input string of user which is a sentence to rhyme on
+    :return: different cases
+    """
