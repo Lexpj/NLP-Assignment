@@ -136,15 +136,15 @@ row = interactions.ActionRow(components=[buttonAll,buttonWorst,buttonBest])
 # Checks whether the sentence is correct.
 async def CheckSentence(ctx: interactions.CommandContext,prompt: str):
     fullStopCount = 0
-    words = []
     words = prompt.split()
-    # Count how many full stops there are in the given prompt
+    # Count how many full stops or other stops there are in the given prompt
     for word in words:
-        if word.find("."):
-            fullStopCount += 1
-    # If there are multiple full stops detected (more than 1)
-    if fullStopCount > 1:
-        await ctx.send(f"Multiple full stops are detected, is this a single sentence? Try to send a single sentence.")
+        for char in word:
+            if char in (".", "?", "!"):
+                fullStopCount += 1
+        # If there are multiple full or other stops detected (more than 1)
+        if fullStopCount >= 2:
+            await ctx.send(f"Multiple full stops are detected, is this a single sentence? Try to send a single sentence.")
 
 async def rhyme(ctx: interactions.CommandContext, prompt: str = ""):
     CheckSentence(prompt)
