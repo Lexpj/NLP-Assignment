@@ -147,7 +147,7 @@ async def CheckSentence(ctx: interactions.CommandContext,prompt: str):
             await ctx.send(f"Multiple full stops are detected, is this a single sentence? Try to send a single sentence.")
 
 async def rhyme(ctx: interactions.CommandContext, prompt: str = ""):
-    CheckSentence(prompt)
+    await CheckSentence(prompt)
     rhymeWords = getRhymeWords(prompt.split()[-1])
 
     if len(rhymeWords) == 0:
