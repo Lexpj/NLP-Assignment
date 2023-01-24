@@ -130,7 +130,7 @@ row = interactions.ActionRow(components=[buttonAll,buttonWorst,buttonBest])
 def __jobBart(ctx,prompt,rhymeWords):
     global q
     gen = BARTJUH.gen(prompt,rhymeWords[0])
-    q[prompt] = gen
+    q[prompt] = (gen,ctx)
     
     
 @bot.command(
@@ -148,7 +148,7 @@ def __jobBart(ctx,prompt,rhymeWords):
 
 async def rhyme(ctx: interactions.CommandContext, prompt: str = ""):
     global q
-    if prompt[-1] in ".,":
+    if prompt[-1] in ".,?!":
         newprompt = prompt[:-1]
     else:
         newprompt = prompt
@@ -157,7 +157,8 @@ async def rhyme(ctx: interactions.CommandContext, prompt: str = ""):
     if len(rhymeWords) == 0:
         await ctx.send(f"No words found that rhyme with '{prompt.split()[-1]}'")
     else:
-        await ctx.send("Loading...")
+        await ctx.defer()
+        
         thread = Thread(target=__jobBart,args=(ctx,prompt,rhymeWords))
         
         thread.start()
@@ -168,7 +169,7 @@ async def rhyme(ctx: interactions.CommandContext, prompt: str = ""):
             res = q.get(item,None)
             if res != None:
                 try:
-                    await ctx.edit(f"{item} \n-> {q[item]}")
+                    await q[item][1].send(f"{item} \n-> {q[item][0]}")
                     del q[item]
                 except Exception as e:
                     print(e)
