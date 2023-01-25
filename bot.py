@@ -183,6 +183,7 @@ def CheckSentence(prompt: str):
 
 async def rhyme(ctx: interactions.CommandContext, prompt: str = ""):
     global q
+    blacklist = []
     
     # Check input
     res = ""#CheckSentence(prompt) 
@@ -195,7 +196,8 @@ async def rhyme(ctx: interactions.CommandContext, prompt: str = ""):
         newprompt = prompt[:-1]
     else:
         newprompt = prompt
-    rhymeWords = getRhymeWords(newprompt.split()[-1])
+    blacklist.append(newprompt.split()[-1])
+    rhymeWords = getRhymeWords(newprompt.split()[-1], blacklist)
     
     if len(rhymeWords) == 0:
         await ctx.send(f"No words found that rhyme with '{prompt.split()[-1]}'")
