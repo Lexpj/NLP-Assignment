@@ -1,7 +1,7 @@
 import requests
 import json
 
-def getRhymeWords(word):
+def getRhymeWords(word, blacklist):
     """
     Get the rhyme words in an array from a given word
     :param word: word as input for the rhyme word API
@@ -19,9 +19,13 @@ def getRhymeWords(word):
         # Turn the JSON into an useful datastructure
         text = response.text
         dic = json.loads(text)
+        words = [i["word"] for i in dic]
         
         # Return the words
-        return [i["word"] for i in dic]
+        for unwanted in blacklist:
+            if unwanted in words:
+                words.remove(unwanted)
+        return words
     
     # If fails, it returns an empty array
     return []

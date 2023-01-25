@@ -156,11 +156,13 @@ def __jobBart(ctx,prompt,rhymeWords):
 
 async def rhyme(ctx: interactions.CommandContext, prompt: str = ""):
     global q
+    blacklist = []
     if prompt[-1] in ".,?!":
         newprompt = prompt[:-1]
     else:
         newprompt = prompt
     rhymeWords = getRhymeWords(newprompt.split()[-1])
+    blacklist.append(newprompt.split()[-1])
     
     if len(rhymeWords) == 0:
         await ctx.send(f"No words found that rhyme with '{prompt.split()[-1]}'")
@@ -246,8 +248,7 @@ async def button_reponse_best(ctx):
 async def button_reponse_rerhyme(ctx):
     phrase = extractPhrase(str(ctx.message))
     word = phrase.split()[-1]
-    rhymes = getRhymeWords(word)
-    await ctx.send(f"The worst rhyme of '{word}' is {rhymes[-1]}",components=rhymeon)
+    await ctx.send("The new sentence is:",components=rhymeon)
 
 #####################################
    
