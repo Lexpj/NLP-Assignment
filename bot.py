@@ -244,7 +244,7 @@ async def rhymewords(ctx: interactions.CommandContext, prompt: str = ""):
         newprompt = prompt[:-1]
     else:
         newprompt = prompt
-    rhymeWords = getRhymeWords(newprompt.split()[-1])
+    rhymeWords = getRhymeWords(newprompt.split()[-1], [])
     
     if len(rhymeWords) == 0:
         await ctx.send(f"No words found that rhyme with '{prompt.split()[-1]}'")
@@ -268,21 +268,21 @@ def extractPhrase(s,word=False):
 async def button_reponse_all(ctx):
     phrase = extractPhrase(str(ctx.message.content))
     word = phrase.split()[-1]
-    rhymes = getRhymeWords(word)
+    rhymes = getRhymeWords(word, [])
     await ctx.send(f"All rhymes of '{word}' are: {', '.join(rhymes)}",components=row)
 
 @bot.component("worst")
 async def button_reponse_worst(ctx):
     phrase = extractPhrase(str(ctx.message.content))
     word = phrase.split()[-1]
-    rhymes = getRhymeWords(word)
+    rhymes = getRhymeWords(word, [])
     await ctx.send(f"The worst rhyme of '{word}' is {rhymes[-1]}",components=row)
     
 @bot.component("best")
 async def button_reponse_best(ctx):
     phrase = extractPhrase(str(ctx.message.content))
     word = phrase.split()[-1]
-    rhymes = getRhymeWords(word)
+    rhymes = getRhymeWords(word, [])
     await ctx.send(f"The best rhyme of '{word}' is {rhymes[0]}",components=row)
 
 @bot.component("rerhyme")
@@ -293,7 +293,7 @@ async def button_response_rerhyme(ctx):
     word = phrase.split()[-1]
     if word[-1] in ".,?!":
         word = word[:-1]
-    rhymes = getRhymeWords(word)
+    rhymes = getRhymeWords(word, [])
     await ctx.send(f"To continue, '{word}' rhymes with: {', '.join(rhymes)}",components=rhymeon)
 
 #####################################
