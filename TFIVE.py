@@ -1,5 +1,5 @@
 from transformers import T5Tokenizer, T5Config, T5ForConditionalGeneration
-#import torch
+from Sim import simmy
 
 T5= 't5-base' #"t5-small", "t5-base", "t5-large", "t5-3b", "t5-11b"
 
@@ -35,9 +35,17 @@ class Tfive:
                 return _result_prefix + _txt + _result_suffix
 
         results = list(map(_filter, outputs))
+        high = 0
+        highh =''
         for i in results:
+            li = i.split('.')
+            #print(li)
             print(i)
-        return(results[0])
+            score = simmy(li[0],li[1])
+            if (float(score) > float(high)):
+                high = score
+                highh = i
+        return(highh)
 
 XLNETJUH = Tfive()
 XLNETJUH.gen("My dog stepped on a bee.","tree")
