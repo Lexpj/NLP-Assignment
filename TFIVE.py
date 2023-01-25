@@ -20,7 +20,7 @@ class Tfive:
         input_ids = encoded['input_ids']#.to(DEVICE)
 
         # Generaing 20 sequences with maximum length set to 5
-        outputs = self.t5_mlm.generate(input_ids=input_ids, num_beams=200, num_return_sequences=1, max_length=9)
+        outputs = self.t5_mlm.generate(input_ids=input_ids, num_beams=200, num_return_sequences=1, max_length=25)
 
         _0_index = text.index('<extra_id_0>')
         _result_prefix = text[:_0_index]
@@ -35,4 +35,5 @@ class Tfive:
                 return _result_prefix + _txt + _result_suffix
 
         results = list(map(_filter, outputs))
+        print(results)
         return results

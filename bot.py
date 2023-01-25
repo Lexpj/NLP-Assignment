@@ -1,17 +1,14 @@
 import interactions
 import os
-import sys
-print("sys.path:\n" + "\n".join(sys.path))
-import subprocess
 import random
-from APICall import getRhymeWords 
+from APICall import getRhymeWords, checkName, checkWord
 from BART import BART
 from BLEU import BLEU
 from TFIVE import Tfive
 from threading import *
 
 BARTJUH = Tfive()
-BLEUTJUH = BLEU()
+#BLEUTJUH = BLEU()
 
 ######### DO NOT CHANGE #########
 import os.path
@@ -127,18 +124,50 @@ buttonWorst = interactions.Button(
     label="Worst",
     custom_id="worst"
 )
+buttonReRhyme = interactions.Button(
+    style=interactions.ButtonStyle.PRIMARY,
+    label="Continue rhyming",
+    custom_id="rerhyme"
+)
+
+
 row = interactions.ActionRow(components=[buttonAll,buttonWorst,buttonBest])
+rhymeon = interactions.ActionRow(components=[buttonReRhyme])
 
 
 def __jobBart(ctx,prompt,rhymeword):
     global q
     gen = BARTJUH.gen(prompt,rhymeword)[0]
     try:
-        q[prompt].append((gen,ctx,rhymeword,BLEUTJUH.score(gen)))
+        q[prompt].append((gen,ctx,rhymeword,0))#BLEUTJUH.score(gen)))
     except:
-        q[prompt] = [(gen,ctx,rhymeword,BLEUTJUH.score(gen))]
+        q[prompt] = [(gen,ctx,rhymeword,0)]#BLEUTJUH.score(gen))]
     
-    
+
+
+# Checks whether the sentence is correct.
+def CheckSentence(prompt: str):
+    fullStopCount = 0
+    words = prompt.split()
+    # Count how many full stops or other stops there are in the given prompt
+    for word in words:
+        word = word.replace(".","").replace(",","").replace("?","").replace("!","")
+        # Check if word is in English dictionary or name dictionary
+        if checkWord(word) == 0:
+            if checkName(word) == 0:
+                # Check if user wants to continue, gives the option yes to continue or no to restart
+                return f"'{word}' can not be found in the dictionary database, are you sure this is correct?"
+        # Checking every character in a word
+        for char in word:
+            if char in (".", "?", "!"):
+                fullStopCount += 1
+        # If there are multiple full or other stops detected (more than 1)
+        if fullStopCount >= 2:
+            return f"Multiple full stops are detected, is this a single sentence? Try to send a single sentence."
+    return ""
+
+
+
 @bot.command(
     name="rhyme",
     description="Use rhyme commands",
@@ -154,6 +183,14 @@ def __jobBart(ctx,prompt,rhymeword):
 
 async def rhyme(ctx: interactions.CommandContext, prompt: str = ""):
     global q
+    
+    # Check input
+    res = ""#CheckSentence(prompt) 
+    if res != "":
+        await ctx.send(res)
+        return
+
+    # Remove punctuation at last word
     if prompt[-1] in ".,?!":
         newprompt = prompt[:-1]
     else:
@@ -178,10 +215,11 @@ async def rhyme(ctx: interactions.CommandContext, prompt: str = ""):
             if res != None:
                 for i in q[item]:
                     try:
-                        s += '({0:.2f}'.format(i[3]) + f",{i[2]})" + f": {i[0]}\n"
+                        #s += '({0:.2f}'.format(i[3]) + f",{i[2]})" + f": {i[0]}\n"
+                        s += f"({i[2]})" + f": {i[0]}\n"
                     except Exception as e:
                         print(e)
-                await q[item][0][1].send(s)
+                await q[item][0][1].send(s,components=rhymeon)
             try:
                 del q[item]
             except:pass
@@ -244,6 +282,17 @@ async def button_reponse_best(ctx):
     word = phrase.split()[-1]
     rhymes = getRhymeWords(word)
     await ctx.send(f"The best rhyme of '{word}' is {rhymes[0]}",components=row)
+
+@bot.component("rerhyme")
+async def button_response_rerhyme(ctx):
+    phrase = str(ctx.message.content)
+    print(phrase)
+    phrase = phrase.split('\n')[0]
+    word = phrase.split()[-1]
+    if word[-1] in ".,?!":
+        word = word[:-1]
+    rhymes = getRhymeWords(word)
+    await ctx.send(f"To continue, '{word}' rhymes with: {', '.join(rhymes)}",components=rhymeon)
 
 #####################################
    
