@@ -5,7 +5,7 @@ print("sys.path:\n" + "\n".join(sys.path))
 import subprocess
 import random
 from APICall import getRhymeWords 
-from XLNet import XLNet
+from TFIVE import XLNet
 from threading import *
 
 BARTJUH = XLNet()
