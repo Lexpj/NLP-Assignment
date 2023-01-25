@@ -126,7 +126,13 @@ buttonWorst = interactions.Button(
     label="Worst",
     custom_id="worst"
 )
+buttonReRhyme = interactions.Button(
+    style=interactions.ButtonStyle.PRIMARY,
+    label="Continue rhyming",
+    custom_id="rerhyme"
+)
 row = interactions.ActionRow(components=[buttonAll,buttonWorst,buttonBest])
+rhymeon = interactions.ActionRow(components=[buttonReRhyme])
 
 
 def __jobBart(ctx,prompt,rhymeWords):
@@ -173,6 +179,7 @@ async def rhyme(ctx: interactions.CommandContext, prompt: str = ""):
                 try:
                     await q[item][1].send(f"{item} \n-> {q[item][0]}\n Score: {round(BLEUTJUH.score(q[item][0]),2)}")
                     del q[item]
+                    await ctx.send("Press to continue rhyming", components=rhymeon)
                 except Exception as e:
                     print(e)
                     
@@ -234,6 +241,13 @@ async def button_reponse_best(ctx):
     word = phrase.split()[-1]
     rhymes = getRhymeWords(word)
     await ctx.send(f"The best rhyme of '{word}' is {rhymes[0]}",components=row)
+    
+@bot.component("Continue Rhyming")
+async def button_reponse_rerhyme(ctx):
+    phrase = extractPhrase(str(ctx.message))
+    word = phrase.split()[-1]
+    rhymes = getRhymeWords(word)
+    await ctx.send(f"The worst rhyme of '{word}' is {rhymes[-1]}",components=rhymeon)
 
 #####################################
    

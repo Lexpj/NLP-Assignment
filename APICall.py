@@ -28,21 +28,24 @@ def getRhymeWords(word):
 
 ##############################################################################
 
-# Make the URL
-url = "https://api.datamuse.com/words?rel_rhy=" + str("panda")
-# Get the JSON from the API
-response = requests.get(url)
+# # Make the URL
+# url = "https://api.datamuse.com/words?rel_rhy=" + str("panda")
+# # Get the JSON from the API
+# response = requests.get(url)
 
-# If valid
-if response.status_code == 200:
+# blacklist = ["propaganda"]
+
+# # If valid
+# if response.status_code == 200:
     
-    # Turn the JSON into an useful datastructure
-    text = response.text
-    dic = json.loads(text)
-    words = [i["word"] for i in dic]
+#     # Turn the JSON into an useful datastructure
+#     text = response.text
+#     dic = json.loads(text)
+#     words = [i["word"] for i in dic]
     
-    # Return the words
-    #print([i["word"] for i in dic])
-    if "propaganda" in words:
-        words.remove("propaganda")
-    print(words)
+#     # Return the words
+#     #print([i["word"] for i in dic])
+#     for unwanted in blacklist:
+#         if unwanted in words:
+#             words.remove(unwanted)
+#     print(words)
