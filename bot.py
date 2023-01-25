@@ -7,9 +7,10 @@ import random
 from APICall import getRhymeWords 
 from BART import BART
 from BLEU import BLEU
+from TFIVE import Tfive
 from threading import *
 
-BARTJUH = BART()
+BARTJUH = Tfive()
 BLEUTJUH = BLEU()
 
 ######### DO NOT CHANGE #########
@@ -129,10 +130,13 @@ buttonWorst = interactions.Button(
 row = interactions.ActionRow(components=[buttonAll,buttonWorst,buttonBest])
 
 
-def __jobBart(ctx,prompt,rhymeWords):
+def __jobBart(ctx,prompt,rhymeword):
     global q
-    gen = BARTJUH.gen(prompt,rhymeWords[0])
-    q[prompt] = (gen,ctx)
+    gen = BARTJUH.gen(prompt,rhymeword)[0]
+    try:
+        q[prompt].append((gen,ctx,rhymeword,BLEUTJUH.score(gen)))
+    except:
+        q[prompt] = [(gen,ctx,rhymeword,BLEUTJUH.score(gen))]
     
     
 @bot.command(
@@ -161,21 +165,27 @@ async def rhyme(ctx: interactions.CommandContext, prompt: str = ""):
     else:
         await ctx.defer()
         
-        thread = Thread(target=__jobBart,args=(ctx,prompt,rhymeWords))
-        
-        thread.start()
-        thread.join()
+        threads = [Thread(target=__jobBart,args=(ctx,prompt,rhymeWords[i])) for i in range(min(5,len(rhymeWords)))]
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join()
         
         k = list(q.keys()).copy()
         for item in k:
             res = q.get(item,None)
+            s = f"{item} \n"
             if res != None:
-                try:
-                    await q[item][1].send(f"{item} \n-> {q[item][0]}\n Score: {round(BLEUTJUH.score(q[item][0]),2)}")
-                    del q[item]
-                except Exception as e:
-                    print(e)
-                    
+                for i in q[item]:
+                    try:
+                        s += '({0:.2f}'.format(i[3]) + f",{i[2]})" + f": {i[0]}\n"
+                    except Exception as e:
+                        print(e)
+                await q[item][0][1].send(s)
+            try:
+                del q[item]
+            except:pass
+                                    
 @bot.command(
     name="rhymewords",
     description="Get single rhyme word",
@@ -216,21 +226,21 @@ def extractPhrase(s,word=False):
 
 @bot.component("all")
 async def button_reponse_all(ctx):
-    phrase = extractPhrase(str(ctx.message))
+    phrase = extractPhrase(str(ctx.message.content))
     word = phrase.split()[-1]
     rhymes = getRhymeWords(word)
     await ctx.send(f"All rhymes of '{word}' are: {', '.join(rhymes)}",components=row)
 
 @bot.component("worst")
 async def button_reponse_worst(ctx):
-    phrase = extractPhrase(str(ctx.message))
+    phrase = extractPhrase(str(ctx.message.content))
     word = phrase.split()[-1]
     rhymes = getRhymeWords(word)
     await ctx.send(f"The worst rhyme of '{word}' is {rhymes[-1]}",components=row)
     
 @bot.component("best")
 async def button_reponse_best(ctx):
-    phrase = extractPhrase(str(ctx.message))
+    phrase = extractPhrase(str(ctx.message.content))
     word = phrase.split()[-1]
     rhymes = getRhymeWords(word)
     await ctx.send(f"The best rhyme of '{word}' is {rhymes[0]}",components=row)
