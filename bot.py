@@ -5,10 +5,10 @@ print("sys.path:\n" + "\n".join(sys.path))
 import subprocess
 import random
 from APICall import getRhymeWords 
-from BART import BART
+from XLNet import XLNet
 from threading import *
 
-BARTJUH = BART()
+BARTJUH = XLNet()
 
 ######### DO NOT CHANGE #########
 import os.path
