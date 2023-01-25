@@ -6,9 +6,11 @@ import subprocess
 import random
 from APICall import getRhymeWords 
 from BART import BART
+from BLEU import BLEU
 from threading import *
 
 BARTJUH = BART()
+BLEUTJUH = BLEU()
 
 ######### DO NOT CHANGE #########
 import os.path
@@ -169,7 +171,7 @@ async def rhyme(ctx: interactions.CommandContext, prompt: str = ""):
             res = q.get(item,None)
             if res != None:
                 try:
-                    await q[item][1].send(f"{item} \n-> {q[item][0]}")
+                    await q[item][1].send(f"{item} \n-> {q[item][0]}\n Score: {round(BLEUTJUH.score(q[item][0]),2)}")
                     del q[item]
                 except Exception as e:
                     print(e)
@@ -235,26 +237,26 @@ async def button_reponse_best(ctx):
 
 #####################################
    
-@bot.command(
-    name="reboot",
-    description="Reboots the server to add recent changes",
-)
-async def reload(ctx):
-    await ctx.send("Rebooting...")
-    with open(os.path.dirname(__file__) + "/../branch.txt","r") as f:
-        branch = f.readline().rstrip()
-    await bot.change_presence(presence=interactions.api.models.presence.ClientPresence(activities=[
-        interactions.api.models.presence.PresenceActivity(name=f"Rebooting to '{branch}'...",type=0)
-    ]))
-    os.system("sudo systemctl restart DiscordBot")        
+# @bot.command(
+#     name="reboot",
+#     description="Reboots the server to add recent changes",
+# )
+# async def reload(ctx):
+#     await ctx.send("Rebooting...")
+#     with open(os.path.dirname(__file__) + "/../branch.txt","r") as f:
+#         branch = f.readline().rstrip()
+#     await bot.change_presence(presence=interactions.api.models.presence.ClientPresence(activities=[
+#         interactions.api.models.presence.PresenceActivity(name=f"Rebooting to '{branch}'...",type=0)
+#     ]))
+#     os.system("sudo systemctl restart DiscordBot")        
         
 @bot.event
 async def on_ready():
     global _ready
     if not _ready:
-        await bot.change_presence(presence=interactions.api.models.presence.ClientPresence(activities=[
-            interactions.api.models.presence.PresenceActivity(name=f"Active on '{BRANCH}'",type=0)
-        ]))
+        #await bot.change_presence(presence=interactions.api.models.presence.ClientPresence(activities=[
+        #    interactions.api.models.presence.PresenceActivity(name=f"Active on '{BRANCH}'",type=0)
+        #]))
         print(f'Bot has connected to Discord!')  
         _ready = True
             
