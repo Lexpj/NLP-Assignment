@@ -1,7 +1,18 @@
 import requests
 import json
 
-def getRhymeWords(word, blacklist):
+
+class Blacklist():
+    def __init__(self):
+        self.blacklist = []
+    def filter(self,a):
+        return [x for x in a if x not in self.blacklist]
+    def clear(self):
+        self.blacklist = []
+    def add(self,a):
+        self.blacklist.append(a)
+
+def getRhymeWords(word):
     """
     Get the rhyme words in an array from a given word
     :param word: word as input for the rhyme word API
@@ -21,10 +32,6 @@ def getRhymeWords(word, blacklist):
         dic = json.loads(text)
         words = [i["word"] for i in dic]
         
-        # Return the words
-        for undesired in blacklist:
-            if undesired in words:
-                words.remove(undesired)
         return words
     
     # If fails, it returns an empty array
@@ -36,11 +43,15 @@ def checkWord(word):
     :param word: input string of user which is a word from a sentence to rhyme on
     :return: if the word exists in the dictionary
     """
-    # Make the URL
-    url = "https://api.dictionaryapi.dev/api/v2/entries/en/" + str(word)
-    # Get the JSON from the API
-    response = requests.get(url)
 
+    app_id = '813b84fe'
+    app_key = 'e6e31085db033e2d591816e4f809311d'
+    language = 'en-gb'
+    try:
+        url = 'https://od-api.oxforddictionaries.com/api/v2/entries/'  + language + '/'  + word.lower()
+        response = requests.get(url, headers = {'app_id' : app_id, 'app_key' : app_key})
+    except Exception as e:
+        print(e)
     # If valid
     if response.status_code == 200:
         return 1

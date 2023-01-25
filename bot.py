@@ -1,14 +1,15 @@
 import interactions
 import os
 import random
-from APICall import getRhymeWords, checkName, checkWord
+from APICall import getRhymeWords, checkName, checkWord, Blacklist
 from BART import BART
 from BLEU import BLEU
 from TFIVE import Tfive
 from threading import *
 
-BARTJUH = Tfive()
+BARTJUH = BART()
 #BLEUTJUH = BLEU()
+BLACKLIST = Blacklist()
 
 ######### DO NOT CHANGE #########
 import os.path
@@ -137,7 +138,7 @@ rhymeon = interactions.ActionRow(components=[buttonReRhyme])
 
 def __jobBart(ctx,prompt,rhymeword):
     global q
-    gen = BARTJUH.gen(prompt,rhymeword)[0]
+    gen = BARTJUH.gen(prompt,rhymeword)
     try:
         q[prompt].append((gen,ctx,rhymeword,0))#BLEUTJUH.score(gen)))
     except:
@@ -183,10 +184,11 @@ def CheckSentence(prompt: str):
 
 async def rhyme(ctx: interactions.CommandContext, prompt: str = ""):
     global q
-    blacklist = []
     
+    BLACKLIST.clear()
+
     # Check input
-    res = ""#CheckSentence(prompt) 
+    res = CheckSentence(prompt) 
     if res != "":
         await ctx.send(res)
         return
@@ -196,8 +198,7 @@ async def rhyme(ctx: interactions.CommandContext, prompt: str = ""):
         newprompt = prompt[:-1]
     else:
         newprompt = prompt
-    blacklist.append(newprompt.split()[-1])
-    rhymeWords = getRhymeWords(newprompt.split()[-1], blacklist)
+    rhymeWords = getRhymeWords(newprompt.split()[-1])
     
     if len(rhymeWords) == 0:
         await ctx.send(f"No words found that rhyme with '{prompt.split()[-1]}'")
@@ -218,7 +219,10 @@ async def rhyme(ctx: interactions.CommandContext, prompt: str = ""):
                 for i in q[item]:
                     try:
                         #s += '({0:.2f}'.format(i[3]) + f",{i[2]})" + f": {i[0]}\n"
-                        s += f"({i[2]})" + f": {i[0]}\n"
+                        s += f"({i[2]})" + f": {i[0]}"
+                        if s[-1] != ".":
+                            s += '.'
+                        s += "\n"
                     except Exception as e:
                         print(e)
                 await q[item][0][1].send(s,components=rhymeon)
@@ -268,32 +272,38 @@ def extractPhrase(s,word=False):
 async def button_reponse_all(ctx):
     phrase = extractPhrase(str(ctx.message.content))
     word = phrase.split()[-1]
-    rhymes = getRhymeWords(word, [])
+    rhymes = getRhymeWords(word)
     await ctx.send(f"All rhymes of '{word}' are: {', '.join(rhymes)}",components=row)
 
 @bot.component("worst")
 async def button_reponse_worst(ctx):
     phrase = extractPhrase(str(ctx.message.content))
     word = phrase.split()[-1]
-    rhymes = getRhymeWords(word, [])
+    rhymes = getRhymeWords(word)
     await ctx.send(f"The worst rhyme of '{word}' is {rhymes[-1]}",components=row)
     
 @bot.component("best")
 async def button_reponse_best(ctx):
     phrase = extractPhrase(str(ctx.message.content))
     word = phrase.split()[-1]
-    rhymes = getRhymeWords(word, [])
+    rhymes = getRhymeWords(word)
     await ctx.send(f"The best rhyme of '{word}' is {rhymes[0]}",components=row)
 
 @bot.component("rerhyme")
 async def button_response_rerhyme(ctx):
     phrase = str(ctx.message.content)
     print(phrase)
-    phrase = phrase.split('\n')[0]
-    word = phrase.split()[-1]
-    if word[-1] in ".,?!":
-        word = word[:-1]
-    rhymes = getRhymeWords(word, [])
+    if "\n" in phrase:
+        phrase = phrase.split('\n')[0]
+        word = phrase.split()[-1]
+        if word[-1] in ".,?!":
+            word = word[:-1]
+    else:
+        word = random.choice(phrase.split(":")[1].split(',')[:3])[1:]
+
+    rhymes = getRhymeWords(word)
+    BLACKLIST.add(word)
+    rhymes = BLACKLIST.filter(rhymes)
     await ctx.send(f"To continue, '{word}' rhymes with: {', '.join(rhymes)}",components=rhymeon)
 
 #####################################

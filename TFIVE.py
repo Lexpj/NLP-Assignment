@@ -36,4 +36,4 @@ class Tfive:
 
         results = list(map(_filter, outputs))
         print(results)
-        return results
+        return results[0]
