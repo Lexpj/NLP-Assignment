@@ -37,6 +37,7 @@ class Tfive:
         results = list(map(_filter, outputs))
         for i in results:
             print(i)
+        return(results[0])
 
 XLNETJUH = Tfive()
 XLNETJUH.gen("My dog stepped on a bee.","tree")
