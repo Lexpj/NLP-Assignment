@@ -4,7 +4,9 @@ import sys
 print("sys.path:\n" + "\n".join(sys.path))
 import subprocess
 import random
-from APICall import getRhymeWords 
+from APICall import getRhymeWords
+from APICall import checkName
+from APICall import checkWord
 
 ######### DO NOT CHANGE #########
 import os.path
@@ -118,7 +120,20 @@ buttonWorst = interactions.Button(
     label="Worst",
     custom_id="worst"
 )
+
+buttonYes = interactions.Button(
+    style=interactions.ButtonStyle.PRIMARY,
+    label="Yes, continue",
+    custom_id="Yes"
+)
+
+buttonNo = interactions.Button(
+    style=interactions.ButtonStyle.PRIMARY,
+    label="No, let's try again",
+    custom_id="No"
+)
 row = interactions.ActionRow(components=[buttonAll,buttonWorst,buttonBest])
+row_check = interactions.ActionRow(components=[buttonYes,buttonNo])
 
 @bot.command(
     name="rhyme",
@@ -139,6 +154,13 @@ async def CheckSentence(ctx: interactions.CommandContext,prompt: str):
     words = prompt.split()
     # Count how many full stops or other stops there are in the given prompt
     for word in words:
+        # Check if word is in English dictionary or name dictionary
+        if checkWord(word) is 0:
+            if checkName(word) is 0:
+                # Check if user wants to continue, gives the option yes to continue or no to restart
+                await ctx.send(f"'{word} can not be found in the dictionary database, are you sure this is correct?",
+                               components=row_check)
+        # Checking every character in a word
         for char in word:
             if char in (".", "?", "!"):
                 fullStopCount += 1
@@ -187,6 +209,14 @@ async def button_reponse_best(ctx):
     rhymes = getRhymeWords(word)
     await ctx.send(f"The best rhyme of '{word}' is {rhymes[0]}",components=row)
 
+@bot.component("yes")
+async def button_reponse_yes(ctx):
+    rhymeWords = getRhymeWords(ctx.split()[-1])
+
+    if len(rhymeWords) == 0:
+        await ctx.send(f"No words found that rhyme with '{ctx.split()[-1]}'")
+    else:
+        await ctx.send(f"'{ctx}' rhymes with {random.choice(rhymeWords)}", components=row)
 #####################################
    
 @bot.command(

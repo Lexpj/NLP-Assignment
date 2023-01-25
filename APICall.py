@@ -26,9 +26,41 @@ def getRhymeWords(word):
     # If fails, it returns an empty array
     return []
 
-def checkWord(sentence):
+def checkWord(word):
     """
-    Gets the input phrase from the user in a string form and checks if the phrase is correct
-    :param sentence: input string of user which is a sentence to rhyme on
-    :return: different cases
+    Gets an input word from the user in a string form and checks if the word is in the english dictionary
+    :param word: input string of user which is a word from a sentence to rhyme on
+    :return: if the word exists in the dictionary
     """
+   # Make the URL
+    url = "https://api.dictionaryapi.dev/api/v2/entries/en/" + str(word)
+    # Get the JSON from the API
+    response = requests.get(url)
+
+    # If valid
+    if response.status_code == 200:
+        return 1
+    else:
+        return 0
+
+def checkName(word):
+    """
+    Gets an input word from the user in a string form and checks if the word is in the name dictionary
+    :param word: input string of user which is a word from a sentence to rhyme on
+    :return: if the word exists in the dictionary
+    """
+    # Make the URL
+    url = f"https://www.behindthename.com/api/lookup.json?name='{str(word)}'&key=al061590979"
+
+    # Get the JSON data from the API
+    response = requests.get(url).json()
+
+    # Check if word is in name dictionary
+    if "error_code" not in response:
+        return 1
+    else:
+        return 0
+
+
+
+checkName("Mohammed")
