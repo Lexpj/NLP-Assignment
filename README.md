@@ -8,6 +8,8 @@ R
  O
 T
 
-[API](https://www.datamuse.com/api/)
+[Rhyme API](https://www.datamuse.com/api/)
+[Name API](https://www.behindthename.com/)
+[Dictonary API](https://dictionaryapi.dev/)
 
 Bleu om de score van de rijmende zin te beoordelen
