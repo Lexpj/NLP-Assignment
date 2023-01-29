@@ -16,6 +16,11 @@ Furthermore, the folder at the root of NLP-Assignment, must contain 2 additional
 
 Lastly, as briefly mentioned, a discord bot has to be made at [the developer website](https://discord.com/developers/applications) of Discord. Here, you create an application and use the token of that application in this bot. You can then also create an invite link for your bot to your preferred server. Make sure it has at least `default intents`. Check a tutorial when you are stuck.
 
+Install the required packages by:
+```
+pip install -r requirements.txt
+```
+
 When the setup is complete, you can start your bot with 
 ```
 sudo systemctl start DiscordBot
