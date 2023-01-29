@@ -13,6 +13,12 @@ class Tfive:
         self.t5_mlm = T5ForConditionalGeneration.from_pretrained(T5, config=self.t5_config)#.to(DEVICE)
 
     def gen(self, sentence, rhymeword):
+        """
+        T5 model generate function
+        :param sentence: full sentence as prompt
+        :param rhymeword: rhymeword to be used in the generated sentence
+        :return: generated sentence
+        """
         # Input text
         text = sentence + ' <extra_id_0> ' + rhymeword + '.'
 

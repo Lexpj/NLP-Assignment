@@ -1,0 +1,20 @@
+#!/bin/sh
+
+cd
+cd /path/to/..folder
+
+# Delete old files
+sudo rm -r NLP-Assignment
+
+# Clone new repo branch
+# You could also do all this via pull, but this was to make sure there were never any merge conflicts or remaining files
+line=$(head -n 1 branch.txt)
+git clone -b $line https://github.com/Lexpj/NLP-Assignment.git
+sleep 2
+echo done
+
+# Start script
+cd 
+# Replace this with your own python version
+/usr/bin/python3.9 /path/to/NLP-Assignment/bot.py &
+cd

@@ -1,7 +1,8 @@
 import interactions
 import os
 import random
-from APICall import getRhymeWords, checkName, checkWord, Blacklist
+from APICall import getRhymeWords, checkName, checkWord
+from BLACKLIST import Blacklist
 from BART import BART
 from BLEU import BLEU
 from TFIVE import Tfive
@@ -308,18 +309,18 @@ async def button_response_rerhyme(ctx):
 
 #####################################
    
-# @bot.command(
-#     name="reboot",
-#     description="Reboots the server to add recent changes",
-# )
-# async def reload(ctx):
-#     await ctx.send("Rebooting...")
-#     with open(os.path.dirname(__file__) + "/../branch.txt","r") as f:
-#         branch = f.readline().rstrip()
-#     await bot.change_presence(presence=interactions.api.models.presence.ClientPresence(activities=[
-#         interactions.api.models.presence.PresenceActivity(name=f"Rebooting to '{branch}'...",type=0)
-#     ]))
-#     os.system("sudo systemctl restart DiscordBot")        
+@bot.command(
+    name="reboot",
+    description="Reboots the server to add recent changes",
+)
+async def reload(ctx):
+    await ctx.send("Rebooting...")
+    with open(os.path.dirname(__file__) + "/../branch.txt","r") as f:
+        branch = f.readline().rstrip()
+    # await bot.change_presence(presence=interactions.api.models.presence.ClientPresence(activities=[
+    #     interactions.api.models.presence.PresenceActivity(name=f"Rebooting to '{branch}'...",type=0)
+    # ]))
+    os.system("sudo systemctl restart DiscordBot")        
         
 @bot.event
 async def on_ready():

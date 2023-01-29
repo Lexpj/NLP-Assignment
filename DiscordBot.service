@@ -1,0 +1,12 @@
+[UNIT]
+Description=Discord Rhyme Bot
+Requires=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/path/to/your/shellscript
+
+[Install]
+WantedBy=multi-user.target

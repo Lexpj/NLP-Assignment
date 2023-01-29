@@ -1,17 +1,6 @@
 import requests
 import json
 
-
-class Blacklist():
-    def __init__(self):
-        self.blacklist = []
-    def filter(self,a):
-        return [x for x in a if x not in self.blacklist]
-    def clear(self):
-        self.blacklist = []
-    def add(self,a):
-        self.blacklist.append(a)
-
 def getRhymeWords(word):
     """
     Get the rhyme words in an array from a given word
@@ -44,9 +33,16 @@ def checkWord(word):
     :return: if the word exists in the dictionary
     """
 
+    #######
+    # Currently this is done with a directionary for which you need an account and token to access the API
+    # Replace this with your own account or any word checker API
+    #######
+    
     app_id = '813b84fe'
     app_key = 'e6e31085db033e2d591816e4f809311d'
     language = 'en-gb'
+    
+    # Get request
     try:
         url = 'https://od-api.oxforddictionaries.com/api/v2/entries/'  + language + '/'  + word.lower()
         response = requests.get(url, headers = {'app_id' : app_id, 'app_key' : app_key})
